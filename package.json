@@ -1,0 +1,26 @@
+{
+  "name": "mist-engine",
+  "version": "1.0.0",
+  "description": "Modular 2D Web Game Engine",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eadventurous/mist-engine.git"
+  },
+  "author": "Egor Ivkov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eadventurous/mist-engine/issues"
+  },
+  "homepage": "https://github.com/eadventurous/mist-engine#readme",
+  "devDependencies": {
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.4",
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10"
+  }
+}
