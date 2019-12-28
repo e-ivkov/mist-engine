@@ -1,12 +1,20 @@
 import System from "../../engine/System";
 import Entity from "../../engine/Entity";
 import DebugMessage from "./DebugMessage";
+import Scene from "../../engine/Scene";
+import Group from "../../engine/Group";
 
-export default class DebugSystem extends System{
-    update(entities: Entity[]): void{
-        entities.forEach((entity) => {
-            const msg = entity.getComponent(DebugMessage);
-            if(msg != undefined) console.log((msg as DebugMessage).message);      
-        })
+export default class DebugSystem extends System {
+
+    private debugGroup: Group;
+
+    constructor(scene: Scene) {
+        super(scene);
+        this.debugGroup = scene.addGroup([DebugMessage]);
+    }
+
+    update(deltaTime: number): void {
+        this.debugGroup.matchingEntities.forEach(entity =>
+            console.log((entity.getComponent(DebugMessage) as DebugMessage)?.message))
     }
 }

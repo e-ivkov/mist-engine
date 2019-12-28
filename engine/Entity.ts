@@ -1,11 +1,16 @@
 import Component from "./Component";
 import IComponentConstructor from "./IComponentConstructor";
+import { ComponentEventFunction } from "./ComponentEvent";
 
 export default class Entity {
     private components: Map<IComponentConstructor, Component>;
+    private componentAddedEvent: ComponentEventFunction;
+    private componentRemovedEvent: ComponentEventFunction;
 
-    constructor() {
+    constructor(componentAddedEvent: ComponentEventFunction, componentRemovedEvent: ComponentEventFunction) {
         this.components = new Map();
+        this.componentAddedEvent = componentAddedEvent;
+        this.componentRemovedEvent = componentRemovedEvent;
     }
 
     hasComponents(componentConstructors: IComponentConstructor[]) {
@@ -15,6 +20,7 @@ export default class Entity {
 
     addComponent(componentConstructor: IComponentConstructor, ...args: any) {
         this.components.set(componentConstructor, new componentConstructor(args));
+        this.componentAddedEvent(this);
         return this;
     }
 
@@ -24,6 +30,7 @@ export default class Entity {
 
     removeComponent(componentConstructor: IComponentConstructor){
         this.components.delete(componentConstructor);
+        this.componentRemovedEvent(this);
         return this;
     }
 }
