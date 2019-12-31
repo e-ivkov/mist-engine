@@ -33,4 +33,16 @@ export default class Entity {
         this.componentRemovedEvent(this);
         return this;
     }
+
+    removeAllComponents(){
+        this.components.clear();
+        this.componentRemovedEvent(this);
+        return this;
+    }
+
+    addAllComponents(componentConstructors: IComponentConstructor[]){
+        componentConstructors.forEach(cc => this.components.set(cc, new cc()))
+        this.componentAddedEvent(this);
+        return this;
+    }
 }

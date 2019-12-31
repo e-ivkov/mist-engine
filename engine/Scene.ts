@@ -4,16 +4,23 @@ import System from "./System";
 import { ComponentEvent } from "./ComponentEvent";
 import IComponentConstructor from "./IComponentConstructor";
 import ISystemConstructor from "./ISystemConstructor";
+import { AwakeCondition } from "./AwakeCondition";
+
+type AwakeGroup = Group;
 
 export default class Scene {
     private _entities: Set<Entity>;
     private _groups: Set<Group>;
-    private systems: Map<ISystemConstructor, System>;
+    private systems: Map<ISystemConstructor, [System, AwakeGroup]>;
+    private awakeSystems: Set<System>;
+    private alwaysAwakeSystems: Map<ISystemConstructor, System>;
 
     constructor() {
         this._entities = new Set();
         this._groups = new Set();
         this.systems = new Map();
+        this.awakeSystems = new Set();
+        this.alwaysAwakeSystems = new Map();
     }
 
     addEntity(): Entity {
@@ -23,8 +30,18 @@ export default class Scene {
         return entity;
     }
 
-    addSystem(system: ISystemConstructor): void {
-        this.systems.set(system, new system(this));
+    addSystem(systemConstructor: ISystemConstructor, awakeCondition: AwakeCondition): void {
+        const system = new systemConstructor(this);
+        if(awakeCondition === "always"){
+            this.alwaysAwakeSystems.set(systemConstructor, system);
+        }
+        else{
+            const awakeGroup = this.addGroup(awakeCondition);
+            this.systems.set(systemConstructor, [system, awakeGroup]);
+            if(awakeGroup.matchingEntities.length > 0){
+                this.awakeSystems.add(system);
+            }
+        }
     }
 
     addGroup(componentConstructors: IComponentConstructor[]) {
@@ -46,7 +63,11 @@ export default class Scene {
     }
 
     removeEntity(entity: Entity) {
-        return this._entities.delete(entity);
+        if(this._entities.delete(entity)){
+            entity.removeAllComponents();
+            return true;
+        }
+        return false;
     }
 
     removeGroup(group: Group) {
@@ -54,15 +75,35 @@ export default class Scene {
     }
 
     removeSystem(system: ISystemConstructor) {
-        return this.systems.delete(system);
+        if(!this.alwaysAwakeSystems.delete(system)){
+            if(this.systems.has(system)){
+                let [s, g] = this.systems.get(system);
+                this.awakeSystems.delete(s as System);
+                return this.systems.delete(system);
+
+            }
+            return false;
+        }
+        return true;
     }
 
     private updateGroups(entity: Entity, event: ComponentEvent) {
         this._groups.forEach(group => group.update(entity, event));
         console.log("Groups updated!");
+        this.updateAwakeSystems()
+    }
+
+    private updateAwakeSystems() {
+        this.awakeSystems.clear();
+        for(let [system, awakeGroup] of this.systems.values()){
+            if(awakeGroup.matchingEntities.length > 0){
+                this.awakeSystems.add(system);
+            }
+        }
     }
 
     update(deltaTime: number) {
-        this.systems.forEach((system) => system.update(deltaTime));
+        this.awakeSystems.forEach((system) => system.update(deltaTime));
+        this.alwaysAwakeSystems.forEach((system) => system.update(deltaTime));
     }
 }

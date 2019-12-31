@@ -6,7 +6,8 @@ import DebugSystem from "./DebugSystem";
 let game = new Game();
 
 let scene = new Scene();
-scene.addSystem(DebugSystem);
+scene.addSystem(DebugSystem, [DebugMessage]);
+scene.update(0);
 scene.addEntity().addComponent(DebugMessage);
 
 scene.update(0);

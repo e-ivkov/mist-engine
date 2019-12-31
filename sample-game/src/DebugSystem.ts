@@ -14,6 +14,7 @@ export default class DebugSystem extends System {
     }
 
     update(deltaTime: number): void {
+        console.log("System update called");
         this.debugGroup.matchingEntities.forEach(entity =>
             console.log((entity.getComponent(DebugMessage) as DebugMessage)?.message))
     }
