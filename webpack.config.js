@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+    mode: 'development',
     entry: "./sample-game/src/index.ts",
     output: {
         path: path.resolve(__dirname, 'sample-game/dist'),
@@ -14,5 +15,9 @@ module.exports = {
             // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
             { test: /\.tsx?$/, use: ["ts-loader"], exclude: /node_modules/ }
         ]
-    }
+    },
+    devtool: "inline-source-map",
+    devServer: {
+         contentBase: './sample-game/dist',
+    },
 }
