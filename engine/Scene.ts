@@ -30,8 +30,8 @@ export default class Scene {
         return entity;
     }
 
-    addSystem(systemConstructor: ISystemConstructor, awakeCondition: AwakeCondition): void {
-        const system = new systemConstructor(this);
+    addSystem(systemConstructor: ISystemConstructor, awakeCondition: AwakeCondition, ...args: any[]) {
+        const system = new systemConstructor(this, ...args);
         if(awakeCondition === "always"){
             this.alwaysAwakeSystems.set(systemConstructor, system);
         }
@@ -42,6 +42,7 @@ export default class Scene {
                 this.awakeSystems.add(system);
             }
         }
+        return system;
     }
 
     addGroup(componentConstructors: IComponentConstructor[]) {

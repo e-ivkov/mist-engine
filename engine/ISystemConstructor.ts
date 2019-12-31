@@ -2,5 +2,5 @@ import Scene from "./Scene";
 import System from "./System";
 
 export default interface ISystemConstructor {
-    new (scene: Scene): System
+    new (scene: Scene, ...args: any[]): System
 }

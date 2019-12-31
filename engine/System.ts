@@ -4,7 +4,7 @@ export default abstract class System {
 
     protected scene: Scene;
 
-    constructor(scene: Scene){
+    constructor(scene: Scene, ...args: any[]){
         this.scene= scene;
     }
 
