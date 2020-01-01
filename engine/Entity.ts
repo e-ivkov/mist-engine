@@ -24,23 +24,23 @@ export default class Entity {
         return this;
     }
 
-    getComponent(componentConstructor: IComponentConstructor){
+    getComponent(componentConstructor: IComponentConstructor) {
         return this.components.get(componentConstructor);
     }
 
-    removeComponent(componentConstructor: IComponentConstructor){
+    removeComponent(componentConstructor: IComponentConstructor) {
         this.components.delete(componentConstructor);
         this.componentRemovedEvent(this);
         return this;
     }
 
-    removeAllComponents(){
+    removeAllComponents() {
         this.components.clear();
         this.componentRemovedEvent(this);
         return this;
     }
 
-    addAllComponents(componentConstructors: IComponentConstructor[]){
+    addAllComponents(componentConstructors: IComponentConstructor[]) {
         componentConstructors.forEach(cc => this.components.set(cc, new cc()))
         this.componentAddedEvent(this);
         return this;

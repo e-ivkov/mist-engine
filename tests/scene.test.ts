@@ -8,7 +8,7 @@ beforeEach(() => {
     scene = new Scene();
 })
 
-test("add entity", () => {   
+test("add entity", () => {
     scene.addEntity();
     scene.addEntity();
     expect(scene.entities.length).toBe(2);
@@ -64,14 +64,14 @@ test("remove entity", () => {
 
 test("remove system", () => {
     const entity = scene.addEntity().addComponent(TestComponent);
-    const system = scene.addSystem(TestSystem, [TestComponent], () => {});
+    const system = scene.addSystem(TestSystem, [TestComponent], () => { });
     scene.removeSystem(TestSystem);
     expect(scene["awakeSystems"]).not.toContain(system);
     expect(Array.from(scene["systems"].keys())).not.toContain(TestSystem);
 });
 
 test("remove always awake system", () => {
-    const system = scene.addSystem(TestSystem, "always", () => {});
+    const system = scene.addSystem(TestSystem, "always", () => { });
     scene.removeSystem(TestSystem);
     expect(scene["alwaysAwakeSystems"]).not.toContain(system);
 });

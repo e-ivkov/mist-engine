@@ -1,10 +1,10 @@
 import Entity from "./Entity";
 
-export enum ComponentEvent{
+export enum ComponentEvent {
     Added,
     Removed
 }
 
-export interface ComponentEventFunction{
+export interface ComponentEventFunction {
     (entity: Entity): void;
 }
