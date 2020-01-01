@@ -1,6 +1,6 @@
-import Scene from "../engine/Scene";
-import System from "../engine/System";
-import Component from "../engine/Component";
+import Scene from "../engine/ecs-core/Scene";
+import System from "../engine/ecs-core/System";
+import Component from "../engine/ecs-core/Component";
 
 let scene: Scene;
 

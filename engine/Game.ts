@@ -1,4 +1,4 @@
-import Scene from "./Scene";
+import Scene from "./ecs-core/Scene";
 
 export default class Game {
 

@@ -1,4 +1,4 @@
-import Scene from "../engine/Scene";
+import Scene from "../engine/ecs-core/Scene";
 import Game from "../engine/Game";
 
 test("main game loop", () => {

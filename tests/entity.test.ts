@@ -1,5 +1,5 @@
-import Component from "../engine/Component";
-import Entity from "../engine/Entity";
+import Component from "../engine/ecs-core/Component";
+import Entity from "../engine/ecs-core/Entity";
 
 class TestComponent extends Component { }
 class TestComponent1 extends Component { }

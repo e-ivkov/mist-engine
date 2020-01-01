@@ -1,5 +1,5 @@
 import Game from "../../engine/Game";
-import Scene from "../../engine/Scene";
+import Scene from "../../engine/ecs-core/Scene";
 import DebugMessage from "./DebugMessage";
 import DebugSystem from "./DebugSystem";
 

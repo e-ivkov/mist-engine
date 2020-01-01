@@ -1,7 +1,7 @@
-import Component from "../engine/Component";
-import Entity from "../engine/Entity";
-import Group from "../engine/Group";
-import { ComponentEvent } from "../engine/ComponentEvent";
+import Component from "../engine/ecs-core/Component";
+import Entity from "../engine/ecs-core/Entity";
+import Group from "../engine/ecs-core/Group";
+import { ComponentEvent } from "../engine/ecs-core/ComponentEvent";
 
 class TestComponent extends Component { }
 class TestComponent1 extends Component { }
