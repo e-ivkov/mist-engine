@@ -5,11 +5,13 @@ import IComponentConstructor from "./IComponentConstructor";
 export default abstract class System {
 
     protected scene: Scene;
-    protected cleanUpStack: [Entity, IComponentConstructor][];
+    protected cleanUpComponentStack: [Entity, IComponentConstructor][];
+    protected cleanUpEntityStack: Entity[];
 
     constructor(scene: Scene, ...args: any[]) {
         this.scene = scene;
-        this.cleanUpStack = new Array();
+        this.cleanUpComponentStack = new Array();
+        this.cleanUpEntityStack = new Array();
     }
 
     techUpdate(deltaTime: number) {
@@ -18,10 +20,14 @@ export default abstract class System {
     }
 
     private cleanUp() {
-        this.cleanUpStack.forEach(([entity, component]) => {
+        this.cleanUpComponentStack.forEach(([entity, component]) => {
             entity.removeComponent(component);
         })
-        this.cleanUpStack = [];
+        this.cleanUpComponentStack = [];
+        this.cleanUpEntityStack.forEach(entity => {
+            this.scene.removeEntity(entity);
+        });
+        this.cleanUpEntityStack = [];
     }
 
     abstract update(deltaTime: number): void;

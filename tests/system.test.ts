@@ -9,7 +9,8 @@ class TestSystem extends System {
         if (this.addOneFrameComponent) {
             const entity = this.scene.addEntity();
             entity.addComponent(TestComponent);
-            this.cleanUpStack.push([entity, TestComponent]);
+            this.cleanUpComponentStack.push([entity, TestComponent]);
+            this.cleanUpEntityStack.push(entity);
             this.addOneFrameComponent = false;
         }
     }
@@ -24,4 +25,5 @@ test("clean up", () => {
     expect(scene.entitiesWithComponents([TestComponent])).toHaveLength(1);
     scene.update(0);
     expect(scene.entitiesWithComponents([TestComponent])).toHaveLength(0);
+    expect(scene.entities).toHaveLength(0);
 });
