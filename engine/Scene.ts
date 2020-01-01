@@ -103,7 +103,7 @@ export default class Scene {
     }
 
     update(deltaTime: number) {
-        this.awakeSystems.forEach((system) => system.update(deltaTime));
-        this.alwaysAwakeSystems.forEach((system) => system.update(deltaTime));
+        this.awakeSystems.forEach((system) => system.techUpdate(deltaTime));
+        this.alwaysAwakeSystems.forEach((system) => system.techUpdate(deltaTime));
     }
 }
