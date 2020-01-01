@@ -1,9 +1,9 @@
 import Entity from "./Entity";
 import Group from "./Group";
-import System from "./System";
+import ExecuteSystem from "./ExecuteSystem";
 import { ComponentEvent } from "./ComponentEvent";
 import IComponentConstructor from "./IComponentConstructor";
-import ISystemConstructor from "./ISystemConstructor";
+import IExecuteSystemConstructor from "./IExecuteSystemConstructor";
 import { AwakeCondition } from "./AwakeCondition";
 
 type AwakeGroup = Group;
@@ -11,9 +11,9 @@ type AwakeGroup = Group;
 export default class Scene {
     private _entities: Set<Entity>;
     private _groups: Set<Group>;
-    private systems: Map<ISystemConstructor, [System, AwakeGroup]>;
-    private awakeSystems: Set<System>;
-    private alwaysAwakeSystems: Map<ISystemConstructor, System>;
+    private systems: Map<IExecuteSystemConstructor, [ExecuteSystem, AwakeGroup]>;
+    private awakeSystems: Set<ExecuteSystem>;
+    private alwaysAwakeSystems: Map<IExecuteSystemConstructor, ExecuteSystem>;
 
     constructor() {
         this._entities = new Set();
@@ -30,8 +30,9 @@ export default class Scene {
         return entity;
     }
 
-    addSystem(systemConstructor: ISystemConstructor, awakeCondition: AwakeCondition, ...args: any[]) {
+    addExecuteSystem(systemConstructor: IExecuteSystemConstructor, ...args: any[]) {
         const system = new systemConstructor(this, ...args);
+        const awakeCondition = system.getAwakeCondition();
         if (awakeCondition === "always") {
             this.alwaysAwakeSystems.set(systemConstructor, system);
         }
@@ -75,11 +76,11 @@ export default class Scene {
         return this._groups.delete(group);
     }
 
-    removeSystem(system: ISystemConstructor) {
+    removeExecuteSystem(system: IExecuteSystemConstructor) {
         if (!this.alwaysAwakeSystems.delete(system)) {
             if (this.systems.has(system)) {
                 let [s, g] = this.systems.get(system);
-                this.awakeSystems.delete(s as System);
+                this.awakeSystems.delete(s as ExecuteSystem);
                 return this.systems.delete(system);
 
             }

@@ -1,5 +1,5 @@
 import Scene from "../engine/ecs-core/Scene";
-import System from "../engine/ecs-core/System";
+import ExecuteSystem from "../engine/ecs-core/ExecuteSystem";
 import Component from "../engine/ecs-core/Component";
 
 let scene: Scene;
@@ -14,7 +14,7 @@ test("add entity", () => {
     expect(scene.entities.length).toBe(2);
 });
 
-class TestSystem extends System {
+class TestSystem extends ExecuteSystem {
     updateCallback: Function;
 
     constructor(scene: Scene, updateCallback: Function) {
@@ -27,9 +27,15 @@ class TestSystem extends System {
     }
 }
 
+class TestSystem1 extends TestSystem {
+    getAwakeCondition() {
+        return [TestComponent];
+    }
+}
+
 test("always awake system", () => {
     const updateCallback = jest.fn();
-    scene.addSystem(TestSystem, "always", updateCallback);
+    scene.addExecuteSystem(TestSystem, updateCallback);
     scene.update(0);
     scene.update(0);
     expect(updateCallback).toBeCalledTimes(2);
@@ -40,7 +46,7 @@ class TestComponent1 extends Component { }
 
 test("awake group system", () => {
     const updateCallback = jest.fn();
-    scene.addSystem(TestSystem, [TestComponent], updateCallback);
+    scene.addExecuteSystem(TestSystem1, updateCallback);
     const entity = scene.addEntity();
     scene.update(0);
     entity.addComponent(TestComponent);
@@ -64,14 +70,14 @@ test("remove entity", () => {
 
 test("remove system", () => {
     const entity = scene.addEntity().addComponent(TestComponent);
-    const system = scene.addSystem(TestSystem, [TestComponent], () => { });
-    scene.removeSystem(TestSystem);
+    const system = scene.addExecuteSystem(TestSystem1, () => { });
+    scene.removeExecuteSystem(TestSystem1);
     expect(scene["awakeSystems"]).not.toContain(system);
-    expect(Array.from(scene["systems"].keys())).not.toContain(TestSystem);
+    expect(Array.from(scene["systems"].keys())).not.toContain(TestSystem1);
 });
 
 test("remove always awake system", () => {
-    const system = scene.addSystem(TestSystem, "always", () => { });
-    scene.removeSystem(TestSystem);
+    const system = scene.addExecuteSystem(TestSystem, () => { });
+    scene.removeExecuteSystem(TestSystem);
     expect(scene["alwaysAwakeSystems"]).not.toContain(system);
 });

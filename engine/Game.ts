@@ -13,7 +13,7 @@ export default class Game {
 
     set currentScene(scene: Scene) {
         this._currentScene = scene;
-        scene.addSystem(SceneStartSystem, "always");
+        scene.addExecuteSystem(SceneStartSystem);
     }
 
     constructor(startScene: Scene) {

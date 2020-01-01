@@ -1,7 +1,7 @@
-import System from "./ecs-core/System";
+import ExecuteSystem from "./ecs-core/ExecuteSystem";
 import { SceneStarted } from "./EventComponents";
 
-export default class SceneStartSystem extends System {
+export default class SceneStartSystem extends ExecuteSystem {
     startEventFired = false;
 
     update(deltaTime: number) {
@@ -11,7 +11,7 @@ export default class SceneStartSystem extends System {
             this.cleanUpEntityStack.push(entity);
             this.startEventFired = true;
         } else {
-            this.scene.removeSystem(SceneStartSystem);
+            this.scene.removeExecuteSystem(SceneStartSystem);
         }
     }
 }

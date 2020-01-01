@@ -1,8 +1,8 @@
 import Scene from "../engine/ecs-core/Scene";
-import System from "../engine/ecs-core/System";
+import ExecuteSystem from "../engine/ecs-core/ExecuteSystem";
 import Component from "../engine/ecs-core/Component";
 
-class TestSystem extends System {
+class TestSystem extends ExecuteSystem {
     addOneFrameComponent = true;
 
     update(deltaTime: number) {
@@ -20,7 +20,7 @@ class TestComponent extends Component { }
 
 test("clean up", () => {
     const scene = new Scene();
-    scene.addSystem(TestSystem, "always");
+    scene.addExecuteSystem(TestSystem, "always");
     scene.update(0);
     expect(scene.entitiesWithComponents([TestComponent])).toHaveLength(1);
     scene.update(0);
