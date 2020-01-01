@@ -19,7 +19,7 @@ export default class Entity {
     }
 
     addComponent(componentConstructor: IComponentConstructor, ...args: any) {
-        this.components.set(componentConstructor, new componentConstructor(args));
+        this.components.set(componentConstructor, new componentConstructor(...args));
         this.componentAddedEvent(this);
         return this;
     }
