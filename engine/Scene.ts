@@ -32,13 +32,13 @@ export default class Scene {
 
     addSystem(systemConstructor: ISystemConstructor, awakeCondition: AwakeCondition, ...args: any[]) {
         const system = new systemConstructor(this, ...args);
-        if(awakeCondition === "always"){
+        if (awakeCondition === "always") {
             this.alwaysAwakeSystems.set(systemConstructor, system);
         }
-        else{
+        else {
             const awakeGroup = this.addGroup(awakeCondition);
             this.systems.set(systemConstructor, [system, awakeGroup]);
-            if(awakeGroup.matchingEntities.length > 0){
+            if (awakeGroup.matchingEntities.length > 0) {
                 this.awakeSystems.add(system);
             }
         }
@@ -64,7 +64,7 @@ export default class Scene {
     }
 
     removeEntity(entity: Entity) {
-        if(this._entities.delete(entity)){
+        if (this._entities.delete(entity)) {
             entity.removeAllComponents();
             return true;
         }
@@ -76,8 +76,8 @@ export default class Scene {
     }
 
     removeSystem(system: ISystemConstructor) {
-        if(!this.alwaysAwakeSystems.delete(system)){
-            if(this.systems.has(system)){
+        if (!this.alwaysAwakeSystems.delete(system)) {
+            if (this.systems.has(system)) {
                 let [s, g] = this.systems.get(system);
                 this.awakeSystems.delete(s as System);
                 return this.systems.delete(system);
@@ -90,13 +90,13 @@ export default class Scene {
 
     private updateGroups(entity: Entity, event: ComponentEvent) {
         this._groups.forEach(group => group.update(entity, event));
-        this.updateAwakeSystems()
+        this.updateAwakeSystems();
     }
 
     private updateAwakeSystems() {
         this.awakeSystems.clear();
-        for(let [system, awakeGroup] of this.systems.values()){
-            if(awakeGroup.matchingEntities.length > 0){
+        for (let [system, awakeGroup] of this.systems.values()) {
+            if (awakeGroup.matchingEntities.length > 0) {
                 this.awakeSystems.add(system);
             }
         }
