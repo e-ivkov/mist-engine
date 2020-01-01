@@ -90,7 +90,6 @@ export default class Scene {
 
     private updateGroups(entity: Entity, event: ComponentEvent) {
         this._groups.forEach(group => group.update(entity, event));
-        console.log("Groups updated!");
         this.updateAwakeSystems()
     }
 
