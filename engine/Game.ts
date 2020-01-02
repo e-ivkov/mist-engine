@@ -1,11 +1,11 @@
 import Scene from "./ecs-core/Scene";
-import SceneStartSystem from "./SceneStartSystem";
+import { SceneStarted } from "./EventComponents";
 
 export default class Game {
 
     private previousTime = 0;
 
-    private _currentScene!: Scene;
+    private _currentScene: Scene;
 
     get currentScene() {
         return this._currentScene;
@@ -13,14 +13,16 @@ export default class Game {
 
     set currentScene(scene: Scene) {
         this._currentScene = scene;
-        scene.addExecuteSystem(SceneStartSystem);
+        this._currentScene.active = true;
+        this._currentScene.addEntity().addComponent(SceneStarted);
     }
 
     constructor(startScene: Scene) {
-        this.currentScene = startScene;
+        this._currentScene = startScene;
     }
 
     start() {
+        this.currentScene = this._currentScene;
         this.previousTime = window.performance.now();
         this.update();
     }

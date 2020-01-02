@@ -19,8 +19,9 @@ export default class Entity {
     }
 
     addComponent(componentConstructor: IComponentConstructor, ...args: any) {
-        this.components.set(componentConstructor, new componentConstructor(...args));
-        this.componentAddedEvent(this);
+        const component = new componentConstructor(...args);
+        this.components.set(componentConstructor, component);
+        this.componentAddedEvent(this, component);
         return this;
     }
 
@@ -29,20 +30,23 @@ export default class Entity {
     }
 
     removeComponent(componentConstructor: IComponentConstructor) {
-        this.components.delete(componentConstructor);
-        this.componentRemovedEvent(this);
+        const component = this.components.get(componentConstructor);
+        if (component) {
+            this.components.delete(componentConstructor);
+            this.componentRemovedEvent(this, component);
+        }
         return this;
     }
 
     removeAllComponents() {
+        const components = new Map(this.components);
         this.components.clear();
-        this.componentRemovedEvent(this);
+        components.forEach(c => this.componentRemovedEvent(this, c));
         return this;
     }
 
     addAllComponents(componentConstructors: IComponentConstructor[]) {
-        componentConstructors.forEach(cc => this.components.set(cc, new cc()))
-        this.componentAddedEvent(this);
+        componentConstructors.forEach(cc => this.addComponent(cc));
         return this;
     }
 }

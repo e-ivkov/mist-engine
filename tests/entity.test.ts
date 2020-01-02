@@ -18,8 +18,8 @@ test("component event callbacks called right number of times", () => {
     entity.addComponent(TestComponent)
         .addAllComponents([TestComponent1, TestComponent2])
         .removeAllComponents();
-    expect(callbackAdded).toBeCalledTimes(2);
-    expect(callbackRemoved).toBeCalledTimes(1);
+    expect(callbackAdded).toBeCalledTimes(3);
+    expect(callbackRemoved).toBeCalledTimes(3);
 });
 
 test("has components true", () => {

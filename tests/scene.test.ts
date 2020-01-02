@@ -1,6 +1,7 @@
 import Scene from "../engine/ecs-core/Scene";
 import ExecuteSystem from "../engine/ecs-core/ExecuteSystem";
 import Component from "../engine/ecs-core/Component";
+import ReactiveSystem from "../engine/ecs-core/ReactiveSystem";
 
 let scene: Scene;
 
@@ -81,3 +82,33 @@ test("remove always awake system", () => {
     scene.removeExecuteSystem(TestSystem);
     expect(scene["alwaysAwakeSystems"]).not.toContain(system);
 });
+
+class ReactiveTestSystem extends ReactiveSystem {
+    getComponentToReact() {
+        return TestComponent;
+    }
+}
+
+test("reactive system", () => {
+    const system = scene.addReactiveSystem(ReactiveTestSystem);
+    system.onComponentAdded = jest.fn();
+    system.onComponentRemoved = jest.fn();
+    scene.active = true;
+    const entity = scene.addEntity().addComponent(TestComponent).addComponent(TestComponent1);
+    entity.removeAllComponents();
+    scene.addEntity().addComponent(TestComponent);
+    expect(system.onComponentAdded).toBeCalledTimes(2);
+    expect(system.onComponentRemoved).toBeCalledTimes(1);
+});
+
+test("cleanup", () => {
+    const entity1 = scene.addEntity();
+    const entity2 = scene.addEntity();
+    entity1.addComponent(TestComponent);
+    entity2.addComponent(TestComponent1);
+    scene.cleanUpComponentStack.push([entity1, TestComponent]);
+    scene.cleanUpEntityStack.push(entity2);
+    scene.update(0);
+    expect(scene.entities).toEqual([entity1]);
+    expect(entity1.hasComponents([TestComponent])).toBeFalsy();
+})

@@ -1,4 +1,5 @@
 import Entity from "./Entity";
+import Component from "./Component";
 
 export enum ComponentEvent {
     Added,
@@ -6,5 +7,5 @@ export enum ComponentEvent {
 }
 
 export interface ComponentEventFunction {
-    (entity: Entity): void;
+    (entity: Entity, component: Component): void;
 }

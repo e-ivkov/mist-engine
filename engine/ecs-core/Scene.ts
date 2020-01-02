@@ -5,6 +5,9 @@ import { ComponentEvent } from "./ComponentEvent";
 import IComponentConstructor from "./IComponentConstructor";
 import IExecuteSystemConstructor from "./IExecuteSystemConstructor";
 import { AwakeCondition } from "./AwakeCondition";
+import ReactiveSystem from "./ReactiveSystem";
+import IReactiveSystemConstructor from "./IReactiveSystemConstructor";
+import Component from "./Component";
 
 type AwakeGroup = Group;
 
@@ -14,6 +17,11 @@ export default class Scene {
     private systems: Map<IExecuteSystemConstructor, [ExecuteSystem, AwakeGroup]>;
     private awakeSystems: Set<ExecuteSystem>;
     private alwaysAwakeSystems: Map<IExecuteSystemConstructor, ExecuteSystem>;
+    private componentReactiveSystem: Map<IComponentConstructor, Set<ReactiveSystem>>;
+    private reactiveSystemComponentInstance: Map<IReactiveSystemConstructor, [IComponentConstructor, ReactiveSystem]>;
+    cleanUpComponentStack: [Entity, IComponentConstructor][];
+    cleanUpEntityStack: Entity[];
+    active: boolean = false;
 
     constructor() {
         this._entities = new Set();
@@ -21,13 +29,56 @@ export default class Scene {
         this.systems = new Map();
         this.awakeSystems = new Set();
         this.alwaysAwakeSystems = new Map();
+        this.componentReactiveSystem = new Map();
+        this.reactiveSystemComponentInstance = new Map();
+
+        this.cleanUpComponentStack = new Array();
+        this.cleanUpEntityStack = new Array();
     }
 
+
+    //TODO: call on component event
+    //TODO: decide what with reactive and component removed
+    //TODO: test reactive systems
     addEntity(): Entity {
-        const entity = new Entity(entity => this.updateGroups(entity, ComponentEvent.Added),
-            entity => this.updateGroups(entity, ComponentEvent.Removed));
+        const entity = new Entity((e, c) => this.onComponentEvent(e, c, ComponentEvent.Added),
+            (e, c) => this.onComponentEvent(e, c, ComponentEvent.Removed));
         this._entities.add(entity);
         return entity;
+    }
+
+    onComponentEvent(entity: Entity, component: Component, componentEvent: ComponentEvent) {
+        this.updateGroups(entity, componentEvent);
+        if (!this.active) return;
+        this.componentReactiveSystem.get(component.constructor as IComponentConstructor)?.forEach((system) => {
+            if (componentEvent === ComponentEvent.Added) {
+                system.onComponentAdded(entity, component);
+            }
+            else {
+                system.onComponentRemoved(entity, component);
+            }
+        });
+    }
+
+    addReactiveSystem(systemConstructor: IReactiveSystemConstructor, ...args: any[]) {
+        const system = new systemConstructor(this, ...args);
+        const component = system.getComponentToReact();
+        this.reactiveSystemComponentInstance.set(systemConstructor, [component, system]);
+        if (this.componentReactiveSystem.has(component)) {
+            this.componentReactiveSystem.get(component)?.add(system);
+        }
+        else {
+            this.componentReactiveSystem.set(component, new Set([system]));
+        }
+        return system;
+    }
+
+    removeReactiveSystem(systemConstructor: IReactiveSystemConstructor) {
+        const [component, system] = this.reactiveSystemComponentInstance.get(systemConstructor);
+        if (component === undefined) return false;
+        return this.componentReactiveSystem
+            .get(component as IComponentConstructor)
+            ?.delete(system as ReactiveSystem);
     }
 
     addExecuteSystem(systemConstructor: IExecuteSystemConstructor, ...args: any[]) {
@@ -103,8 +154,23 @@ export default class Scene {
         }
     }
 
+    private cleanUp() {
+        this.cleanUpComponentStack.forEach(([entity, component]) => {
+            entity.removeComponent(component);
+        })
+        this.cleanUpComponentStack = [];
+        this.cleanUpEntityStack.forEach(entity => {
+            this.removeEntity(entity);
+        });
+        this.cleanUpEntityStack = [];
+    }
+
     update(deltaTime: number) {
-        this.awakeSystems.forEach((system) => system.techUpdate(deltaTime));
-        this.alwaysAwakeSystems.forEach((system) => system.techUpdate(deltaTime));
+        this.awakeSystems.forEach((system) => system.update(deltaTime));
+        this.alwaysAwakeSystems.forEach((system) => system.update(deltaTime));
+
+        if (this.cleanUpComponentStack.length > 0 || this.cleanUpEntityStack.length > 0) {
+            this.cleanUp();
+        }
     }
 }
