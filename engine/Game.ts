@@ -1,5 +1,5 @@
 import Scene from "./ecs-core/Scene";
-import { SceneStarted } from "./EventComponents";
+import { SceneStarted, GameStarted } from "./EventComponents";
 
 export default class Game {
 
@@ -23,6 +23,7 @@ export default class Game {
 
     start() {
         this.currentScene = this._currentScene;
+        this._currentScene.addEntity().addComponent(GameStarted);
         this.previousTime = window.performance.now();
         this.update();
     }

@@ -36,10 +36,6 @@ export default class Scene {
         this.cleanUpEntityStack = new Array();
     }
 
-
-    //TODO: call on component event
-    //TODO: decide what with reactive and component removed
-    //TODO: test reactive systems
     addEntity(): Entity {
         const entity = new Entity((e, c) => this.onComponentEvent(e, c, ComponentEvent.Added),
             (e, c) => this.onComponentEvent(e, c, ComponentEvent.Removed));
