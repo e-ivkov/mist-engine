@@ -128,6 +128,7 @@ export default class Scene {
             if (this.systems.has(system)) {
                 let [s, g] = this.systems.get(system);
                 this.awakeSystems.delete(s as ExecuteSystem);
+                this.removeGroup(g as Group);
                 return this.systems.delete(system);
 
             }

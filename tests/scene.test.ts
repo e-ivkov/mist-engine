@@ -75,6 +75,7 @@ test("remove system", () => {
     scene.removeExecuteSystem(TestSystem1);
     expect(scene["awakeSystems"]).not.toContain(system);
     expect(Array.from(scene["systems"].keys())).not.toContain(TestSystem1);
+    expect(scene.groups).toHaveLength(0);
 });
 
 test("remove always awake system", () => {
