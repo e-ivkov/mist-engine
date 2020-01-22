@@ -1,11 +1,13 @@
 import Component from "./Component";
 import IComponentConstructor from "./IComponentConstructor";
 import { ComponentEventFunction } from "./ComponentEvent";
+import World from "./World";
 
 export default class Entity {
     private components: Map<IComponentConstructor, Component>;
     private componentAddedEvent: ComponentEventFunction;
     private componentRemovedEvent: ComponentEventFunction;
+    world: World | null = null;
 
     constructor(componentAddedEvent: ComponentEventFunction, componentRemovedEvent: ComponentEventFunction) {
         this.components = new Map();
@@ -20,6 +22,11 @@ export default class Entity {
 
     addComponent(componentConstructor: IComponentConstructor, ...args: any) {
         const component = new componentConstructor(...args);
+        if (component.isSingleton()) {
+            if (!this.world?.tryAddSingletonComponent(component)) {
+                throw "Can not add singleton component ${component} to world ${world}";
+            }
+        }
         this.components.set(componentConstructor, component);
         this.componentAddedEvent(this, component);
         return this;
@@ -32,6 +39,9 @@ export default class Entity {
     removeComponent(componentConstructor: IComponentConstructor) {
         const component = this.components.get(componentConstructor);
         if (component) {
+            if (component.isSingleton()) {
+                this.world?.tryRemoveSingletonComponent(componentConstructor);
+            }
             this.components.delete(componentConstructor);
             this.componentRemovedEvent(this, component);
         }

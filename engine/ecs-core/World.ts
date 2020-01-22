@@ -19,6 +19,7 @@ export default class World {
     private alwaysAwakeSystems: Map<IExecuteSystemConstructor, ExecuteSystem>;
     private componentReactiveSystem: Map<IComponentConstructor, Set<ReactiveSystem>>;
     private reactiveSystemComponentInstance: Map<IReactiveSystemConstructor, [IComponentConstructor, ReactiveSystem]>;
+    private _singletonComponents: Map<IComponentConstructor, Component>;
     cleanUpComponentStack: [Entity, IComponentConstructor][];
     cleanUpEntityStack: Entity[];
     active: boolean = false;
@@ -31,15 +32,33 @@ export default class World {
         this.alwaysAwakeSystems = new Map();
         this.componentReactiveSystem = new Map();
         this.reactiveSystemComponentInstance = new Map();
+        this._singletonComponents = new Map();
 
         this.cleanUpComponentStack = new Array();
         this.cleanUpEntityStack = new Array();
+    }
+
+    getSingletonComponent(componentCons: IComponentConstructor) {
+        return this._singletonComponents.get(componentCons);
+    }
+
+    tryAddSingletonComponent(component: Component): boolean {
+        if (this._singletonComponents.has(component.constructor as IComponentConstructor)) {
+            return false;
+        }
+        this._singletonComponents.set(component.constructor as IComponentConstructor, component);
+        return true;
+    }
+
+    tryRemoveSingletonComponent(componentCons: IComponentConstructor): boolean {
+        return this._singletonComponents.delete(componentCons);
     }
 
     addEntity(): Entity {
         const entity = new Entity((e, c) => this.onComponentEvent(e, c, ComponentEvent.Added),
             (e, c) => this.onComponentEvent(e, c, ComponentEvent.Removed));
         this._entities.add(entity);
+        entity.world = this;
         return entity;
     }
 

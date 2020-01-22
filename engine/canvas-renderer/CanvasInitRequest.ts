@@ -1,4 +1,6 @@
-export default class CanvasInitRequest {
+import Component from "../ecs-core/Component";
+
+export default class CanvasInitRequest extends Component {
     private _width: number;
     private _height: number;
 
@@ -11,6 +13,7 @@ export default class CanvasInitRequest {
     }
 
     constructor(width: number, height: number) {
+        super();
         this._width = width;
         this._height = height;
     }
