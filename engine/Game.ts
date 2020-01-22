@@ -1,23 +1,23 @@
-import Scene from "./ecs-core/Scene";
-import { SceneStarted, GameStarted } from "./EventComponents";
+import World from "./ecs-core/World";
+import { WorldStarted, GameStarted } from "./EventComponents";
 
 export default class Game {
 
     private previousTime = 0;
 
-    private _currentScene: Scene;
+    private _currentScene: World;
 
     get currentScene() {
         return this._currentScene;
     }
 
-    set currentScene(scene: Scene) {
+    set currentScene(scene: World) {
         this._currentScene = scene;
         this._currentScene.active = true;
-        this._currentScene.addEntity().addComponent(SceneStarted);
+        this._currentScene.addEntity().addComponent(WorldStarted);
     }
 
-    constructor(startScene: Scene) {
+    constructor(startScene: World) {
         this._currentScene = startScene;
     }
 

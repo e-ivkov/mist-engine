@@ -1,11 +1,11 @@
-import Scene from "./Scene";
+import World from "./World";
 import Entity from "./Entity";
 import IComponentConstructor from "./IComponentConstructor";
 
 export default abstract class System {
-    protected scene: Scene;
+    protected world: World;
 
-    constructor(scene: Scene, ...args: any[]) {
-        this.scene = scene;
+    constructor(world: World, ...args: any[]) {
+        this.world = world;
     }
 }

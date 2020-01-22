@@ -5,11 +5,11 @@ import LoadedImagesComponent from "./LoadedImagesComponent";
 
 export default class ImageLoaderSystem extends ReactiveSystem {
     onComponentAdded() {
-        this.scene.entitiesWithComponents([ImageLoadRequest]).forEach(e => {
+        this.world.entitiesWithComponents([ImageLoadRequest]).forEach(e => {
             const request = (e.getComponent(ImageLoadRequest) as ImageLoadRequest);
 
             //TODO: check if this entity exists if so add to it
-            const loadedImagesEntity = this.scene.addEntity().addComponent(LoadedImagesComponent);
+            const loadedImagesEntity = this.world.addEntity().addComponent(LoadedImagesComponent);
             const loadedImages = loadedImagesEntity.getComponent(LoadedImagesComponent) as LoadedImagesComponent;
 
             request.fileNames.forEach(fileName => {
@@ -18,7 +18,7 @@ export default class ImageLoaderSystem extends ReactiveSystem {
                 image.onload = () => {
                     numLoaded++;
                     if (numLoaded >= request.fileNames.length) {
-                        this.scene.addEntity().addComponent(ImageLoaded, request);
+                        this.world.addEntity().addComponent(ImageLoaded, request);
                     }
                     loadedImages.imagesByFilename.set(fileName, image);
                 };

@@ -1,25 +1,25 @@
-import Scene from "../engine/ecs-core/Scene";
+import World from "../engine/ecs-core/World";
 import ExecuteSystem from "../engine/ecs-core/ExecuteSystem";
 import Component from "../engine/ecs-core/Component";
 import ReactiveSystem from "../engine/ecs-core/ReactiveSystem";
 
-let scene: Scene;
+let world: World;
 
 beforeEach(() => {
-    scene = new Scene();
+    world = new World();
 })
 
 test("add entity", () => {
-    scene.addEntity();
-    scene.addEntity();
-    expect(scene.entities.length).toBe(2);
+    world.addEntity();
+    world.addEntity();
+    expect(world.entities.length).toBe(2);
 });
 
 class TestSystem extends ExecuteSystem {
     updateCallback: Function;
 
-    constructor(scene: Scene, updateCallback: Function) {
-        super(scene);
+    constructor(world: World, updateCallback: Function) {
+        super(world);
         this.updateCallback = updateCallback;
     }
 
@@ -36,9 +36,9 @@ class TestSystem1 extends TestSystem {
 
 test("always awake system", () => {
     const updateCallback = jest.fn();
-    scene.addExecuteSystem(TestSystem, updateCallback);
-    scene.update(0);
-    scene.update(0);
+    world.addExecuteSystem(TestSystem, updateCallback);
+    world.update(0);
+    world.update(0);
     expect(updateCallback).toBeCalledTimes(2);
 });
 
@@ -47,41 +47,41 @@ class TestComponent1 extends Component { }
 
 test("awake group system", () => {
     const updateCallback = jest.fn();
-    scene.addExecuteSystem(TestSystem1, updateCallback);
-    const entity = scene.addEntity();
-    scene.update(0);
+    world.addExecuteSystem(TestSystem1, updateCallback);
+    const entity = world.addEntity();
+    world.update(0);
     entity.addComponent(TestComponent);
     expect(updateCallback).toBeCalledTimes(0);
-    scene.update(0);
+    world.update(0);
     expect(updateCallback).toBeCalledTimes(1);
     entity.removeAllComponents();
-    scene.update(0);
+    world.update(0);
     entity.addComponent(TestComponent1);
-    scene.update(0);
+    world.update(0);
     expect(updateCallback).toBeCalledTimes(1);
 });
 
 test("remove entity", () => {
-    const entity = scene.addEntity().addComponent(TestComponent);
-    const group = scene.addGroup([TestComponent]);
+    const entity = world.addEntity().addComponent(TestComponent);
+    const group = world.addGroup([TestComponent]);
     expect(group.matchingEntities).toEqual([entity]);
-    scene.removeEntity(entity);
+    world.removeEntity(entity);
     expect(group.matchingEntities.length).toBe(0);
 });
 
 test("remove system", () => {
-    const entity = scene.addEntity().addComponent(TestComponent);
-    const system = scene.addExecuteSystem(TestSystem1, () => { });
-    scene.removeExecuteSystem(TestSystem1);
-    expect(scene["awakeSystems"]).not.toContain(system);
-    expect(Array.from(scene["systems"].keys())).not.toContain(TestSystem1);
-    expect(scene.groups).toHaveLength(0);
+    const entity = world.addEntity().addComponent(TestComponent);
+    const system = world.addExecuteSystem(TestSystem1, () => { });
+    world.removeExecuteSystem(TestSystem1);
+    expect(world["awakeSystems"]).not.toContain(system);
+    expect(Array.from(world["systems"].keys())).not.toContain(TestSystem1);
+    expect(world.groups).toHaveLength(0);
 });
 
 test("remove always awake system", () => {
-    const system = scene.addExecuteSystem(TestSystem, () => { });
-    scene.removeExecuteSystem(TestSystem);
-    expect(scene["alwaysAwakeSystems"]).not.toContain(system);
+    const system = world.addExecuteSystem(TestSystem, () => { });
+    world.removeExecuteSystem(TestSystem);
+    expect(world["alwaysAwakeSystems"]).not.toContain(system);
 });
 
 class ReactiveTestSystem extends ReactiveSystem {
@@ -91,25 +91,25 @@ class ReactiveTestSystem extends ReactiveSystem {
 }
 
 test("reactive system", () => {
-    const system = scene.addReactiveSystem(ReactiveTestSystem);
+    const system = world.addReactiveSystem(ReactiveTestSystem);
     system.onComponentAdded = jest.fn();
     system.onComponentRemoved = jest.fn();
-    scene.active = true;
-    const entity = scene.addEntity().addComponent(TestComponent).addComponent(TestComponent1);
+    world.active = true;
+    const entity = world.addEntity().addComponent(TestComponent).addComponent(TestComponent1);
     entity.removeAllComponents();
-    scene.addEntity().addComponent(TestComponent);
+    world.addEntity().addComponent(TestComponent);
     expect(system.onComponentAdded).toBeCalledTimes(2);
     expect(system.onComponentRemoved).toBeCalledTimes(1);
 });
 
 test("cleanup", () => {
-    const entity1 = scene.addEntity();
-    const entity2 = scene.addEntity();
+    const entity1 = world.addEntity();
+    const entity2 = world.addEntity();
     entity1.addComponent(TestComponent);
     entity2.addComponent(TestComponent1);
-    scene.cleanUpComponentStack.push([entity1, TestComponent]);
-    scene.cleanUpEntityStack.push(entity2);
-    scene.update(0);
-    expect(scene.entities).toEqual([entity1]);
+    world.cleanUpComponentStack.push([entity1, TestComponent]);
+    world.cleanUpEntityStack.push(entity2);
+    world.update(0);
+    expect(world.entities).toEqual([entity1]);
     expect(entity1.hasComponents([TestComponent])).toBeFalsy();
 })

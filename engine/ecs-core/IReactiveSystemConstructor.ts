@@ -1,6 +1,6 @@
-import Scene from "./Scene";
+import World from "./World";
 import ReactiveSystem from "./ReactiveSystem";
 
 export default interface IReactiveSystemConstructor {
-    new(scene: Scene, ...args: any[]): ReactiveSystem
+    new(world: World, ...args: any[]): ReactiveSystem
 }

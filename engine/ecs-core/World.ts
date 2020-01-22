@@ -11,7 +11,7 @@ import Component from "./Component";
 
 type AwakeGroup = Group;
 
-export default class Scene {
+export default class World {
     private _entities: Set<Entity>;
     private _groups: Set<Group>;
     private systems: Map<IExecuteSystemConstructor, [ExecuteSystem, AwakeGroup]>;
