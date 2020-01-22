@@ -1,36 +1,45 @@
 import World from "./ecs-core/World";
-import { WorldStarted, GameStarted } from "./EventComponents";
+import { WorldStarted, GameStarted, WorldStopping } from "./EventComponents";
 
 export default class Game {
 
     private previousTime = 0;
 
-    private _currentScene: World;
+    private _worlds: Set<World>;
 
-    get currentScene() {
-        return this._currentScene;
+    get worlds(): ReadonlyArray<World> {
+        return Array.from(this._worlds);
     }
 
-    set currentScene(scene: World) {
-        this._currentScene = scene;
-        this._currentScene.active = true;
-        this._currentScene.addEntity().addComponent(WorldStarted);
+    addWorld(world: World) {
+        this._worlds.add(world);
+        world.active = true;
+        world.addEntity().addComponent(WorldStarted);
     }
 
-    constructor(startScene: World) {
-        this._currentScene = startScene;
+    removeWorld(world: World) {
+        this._worlds.delete(world);
+        world.addEntity().addComponent(WorldStopping);
+        world.active = false;
+    }
+
+    constructor(worlds: World[]) {
+        this._worlds = new Set(worlds);
     }
 
     start() {
-        this.currentScene = this._currentScene;
-        this._currentScene.addEntity().addComponent(GameStarted);
+        this._worlds.forEach(world => {
+            world.active = true;
+            world.addEntity().addComponent(GameStarted)
+                .addComponent(WorldStarted);
+        })
         this.previousTime = window.performance.now();
         this.update();
     }
 
     private update() {
         const currentTime = window.performance.now();
-        this._currentScene.update(currentTime - this.previousTime);
+        this._worlds.forEach(world => world.update(currentTime - this.previousTime));
         this.previousTime = currentTime;
         window.requestAnimationFrame(this.update.bind(this));
     }

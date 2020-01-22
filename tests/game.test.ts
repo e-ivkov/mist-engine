@@ -7,7 +7,7 @@ test("main game loop", () => {
         .mockReturnValueOnce(-1);
     const world = new World();
     world.update = jest.fn();
-    const game = new Game(world);
+    const game = new Game([world]);
     game.start();
     expect(window.requestAnimationFrame).toBeCalledTimes(1);
     expect(world.update).toBeCalledTimes(1);

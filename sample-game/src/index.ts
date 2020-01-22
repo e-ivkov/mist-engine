@@ -11,7 +11,7 @@ let world = new World();
 world.addReactiveSystem(CanvasInitSystem);
 world.addExecuteSystem(CanvasRendererSystem);
 
-let game = new Game(world);
+let game = new Game([world]);
 game.start();
 
 world.addEntity().addComponent(CanvasInitRequest, 500, 500);
