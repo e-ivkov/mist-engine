@@ -16,5 +16,11 @@ game.start();
 
 world.addEntity().addComponent(CanvasComponent, 500, 500);
 
+const canvasComponent = world.getSingletonComponent(CanvasComponent)! as CanvasComponent;
+
+document.onclick = () => {
+    canvasComponent.width += 10;
+};
+
 
 

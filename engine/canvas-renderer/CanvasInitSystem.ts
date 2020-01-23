@@ -15,6 +15,12 @@ export default class CanvasInitSystem extends ReactiveSystem {
         component.canvas = canvas;
     }
 
+    onComponentChanged() {
+        const component = this.world.getSingletonComponent(CanvasComponent)! as CanvasComponent;
+        component.canvas!.width = component.width;
+        component.canvas!.height = component.height;
+    }
+
     getComponentToReact() {
         return CanvasComponent;
     }

@@ -25,7 +25,9 @@ export default class CanvasRendererSystem extends ExecuteSystem {
         context.fillStyle = canvasComponent.backgroundColor;
         context.fillRect(0, 0, canvasComponent.canvas!.width, canvasComponent.canvas!.height);
 
-        let loadedImages = this.imageMapGroup.matchingEntities[0]
+        const entities = this.imageMapGroup.matchingEntities;
+        if (entities.length <= 0) return;
+        let loadedImages = entities[0]
             .getComponent(LoadedImagesComponent) as LoadedImagesComponent;
 
         this.imageGroup.matchingEntities.forEach(e => {
