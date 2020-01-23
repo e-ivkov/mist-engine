@@ -1,6 +1,6 @@
 import ExecuteSystem from "../ecs-core/ExecuteSystem";
 import CanvasComponent from "./CanvasComponent";
-import Scene from "../ecs-core/Scene";
+import World from "../ecs-core/World";
 import Group from "../ecs-core/Group";
 import PositionComponent from "./PositionComponent";
 import ImageComponent from "./ImageComponent";
@@ -12,11 +12,11 @@ export default class CanvasRendererSystem extends ExecuteSystem {
     canvasGroup: Group;
     imageMapGroup: Group;
 
-    constructor(scene: Scene) {
-        super(scene);
-        this.imageGroup = scene.addGroup([PositionComponent, ImageComponent]);
-        this.canvasGroup = scene.addGroup([CanvasComponent]);
-        this.imageMapGroup = scene.addGroup([LoadedImagesComponent]);
+    constructor(world: World) {
+        super(world);
+        this.imageGroup = world.addGroup([PositionComponent, ImageComponent]);
+        this.canvasGroup = world.addGroup([CanvasComponent]);
+        this.imageMapGroup = world.addGroup([LoadedImagesComponent]);
     }
 
     update(deltaTime: number) {

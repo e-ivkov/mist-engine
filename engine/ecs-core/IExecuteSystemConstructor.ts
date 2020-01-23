@@ -1,6 +1,6 @@
-import Scene from "./Scene";
+import World from "./World";
 import ExecuteSystem from "./ExecuteSystem";
 
 export default interface IExecuteSystemConstructor {
-    new(scene: Scene, ...args: any[]): ExecuteSystem
+    new(world: World, ...args: any[]): ExecuteSystem
 }

@@ -1,4 +1,4 @@
-import Scene from "./Scene";
+import World from "./World";
 import Entity from "./Entity";
 import IComponentConstructor from "./IComponentConstructor";
 import System from "./System";

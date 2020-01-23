@@ -5,7 +5,7 @@ import CanvasComponent from "./CanvasComponent";
 export default class CanvasInitSystem extends ReactiveSystem {
 
     onComponentAdded() {
-        const entity = this.scene.entitiesWithComponents([CanvasInitRequest])[0];
+        const entity = this.world.entitiesWithComponents([CanvasInitRequest])[0];
         const request = (entity.getComponent(CanvasInitRequest) as CanvasInitRequest);
 
         const canvas = document.createElement('canvas');
@@ -14,7 +14,7 @@ export default class CanvasInitSystem extends ReactiveSystem {
 
         document.body.appendChild(canvas);
 
-        this.scene.addEntity().addComponent(CanvasComponent, canvas);
+        this.world.addEntity().addComponent(CanvasComponent, canvas);
     }
 
     getComponentToReact() {

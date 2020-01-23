@@ -8,10 +8,11 @@ import { AwakeCondition } from "./AwakeCondition";
 import ReactiveSystem from "./ReactiveSystem";
 import IReactiveSystemConstructor from "./IReactiveSystemConstructor";
 import Component from "./Component";
+import { SystemBundle, SystemArgs } from "./SystemBundle";
 
 type AwakeGroup = Group;
 
-export default class Scene {
+export default class World {
     private _entities: Set<Entity>;
     private _groups: Set<Group>;
     private systems: Map<IExecuteSystemConstructor, [ExecuteSystem, AwakeGroup]>;
@@ -19,6 +20,7 @@ export default class Scene {
     private alwaysAwakeSystems: Map<IExecuteSystemConstructor, ExecuteSystem>;
     private componentReactiveSystem: Map<IComponentConstructor, Set<ReactiveSystem>>;
     private reactiveSystemComponentInstance: Map<IReactiveSystemConstructor, [IComponentConstructor, ReactiveSystem]>;
+    private _singletonComponents: Map<IComponentConstructor, Component>;
     cleanUpComponentStack: [Entity, IComponentConstructor][];
     cleanUpEntityStack: Entity[];
     active: boolean = false;
@@ -31,29 +33,79 @@ export default class Scene {
         this.alwaysAwakeSystems = new Map();
         this.componentReactiveSystem = new Map();
         this.reactiveSystemComponentInstance = new Map();
+        this._singletonComponents = new Map();
 
         this.cleanUpComponentStack = new Array();
         this.cleanUpEntityStack = new Array();
     }
 
+    getSingletonComponent(componentCons: IComponentConstructor) {
+        return this._singletonComponents.get(componentCons);
+    }
+
+    tryAddSingletonComponent(component: Component): boolean {
+        if (this._singletonComponents.has(component.constructor as IComponentConstructor)) {
+            return false;
+        }
+        this._singletonComponents.set(component.constructor as IComponentConstructor, component);
+        return true;
+    }
+
+    tryRemoveSingletonComponent(componentCons: IComponentConstructor): boolean {
+        return this._singletonComponents.delete(componentCons);
+    }
+
     addEntity(): Entity {
         const entity = new Entity((e, c) => this.onComponentEvent(e, c, ComponentEvent.Added),
-            (e, c) => this.onComponentEvent(e, c, ComponentEvent.Removed));
+            (e, c) => this.onComponentEvent(e, c, ComponentEvent.Removed),
+            (e, c) => this.onComponentEvent(e, c, ComponentEvent.Changed));
         this._entities.add(entity);
+        entity.world = this;
         return entity;
     }
 
     onComponentEvent(entity: Entity, component: Component, componentEvent: ComponentEvent) {
-        this.updateGroups(entity, componentEvent);
+        if (componentEvent !== ComponentEvent.Changed)
+            this.updateGroups(entity, componentEvent);
+
         if (!this.active) return;
+
         this.componentReactiveSystem.get(component.constructor as IComponentConstructor)?.forEach((system) => {
-            if (componentEvent === ComponentEvent.Added) {
-                system.onComponentAdded(entity, component);
-            }
-            else {
-                system.onComponentRemoved(entity, component);
+            switch (componentEvent) {
+                case ComponentEvent.Added:
+                    system.onComponentAdded(entity, component);
+                    break;
+                case ComponentEvent.Removed:
+                    system.onComponentRemoved(entity, component);
+                    break;
+                case ComponentEvent.Changed:
+                    system.onComponentChanged(entity, component);
+                    break;
             }
         });
+    }
+
+    addSystemBundle(bundle: SystemBundle, systemArgs?: SystemArgs) {
+        const [reactSystems, executeSystems] = bundle();
+        reactSystems.forEach(s => {
+            const args = systemArgs?.get(s);
+            if (args) {
+                this.addReactiveSystem(s, ...args);
+            }
+            else {
+                this.addReactiveSystem(s);
+            }
+        });
+
+        executeSystems.forEach(s => {
+            const args = systemArgs?.get(s);
+            if (args) {
+                this.addExecuteSystem(s, ...args);
+            }
+            else {
+                this.addExecuteSystem(s);
+            }
+        })
     }
 
     addReactiveSystem(systemConstructor: IReactiveSystemConstructor, ...args: any[]) {

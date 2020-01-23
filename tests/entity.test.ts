@@ -6,7 +6,7 @@ class TestComponent1 extends Component { }
 class TestComponent2 extends Component { }
 
 test("component added", () => {
-    const entity = new Entity(() => { }, () => { });
+    const entity = new Entity(() => { }, () => { }, () => { });
     entity.addComponent(TestComponent);
     expect(entity.getComponent(TestComponent)).toBeInstanceOf(TestComponent);
 });
@@ -14,7 +14,7 @@ test("component added", () => {
 test("component event callbacks called right number of times", () => {
     const callbackAdded = jest.fn();
     const callbackRemoved = jest.fn();
-    const entity = new Entity(callbackAdded, callbackRemoved);
+    const entity = new Entity(callbackAdded, callbackRemoved, () => { });
     entity.addComponent(TestComponent)
         .addAllComponents([TestComponent1, TestComponent2])
         .removeAllComponents();
@@ -23,13 +23,13 @@ test("component event callbacks called right number of times", () => {
 });
 
 test("has components true", () => {
-    const entity = new Entity(() => { }, () => { });
+    const entity = new Entity(() => { }, () => { }, () => { });
     entity.addAllComponents([TestComponent, TestComponent1, TestComponent2]);
     expect(entity.hasComponents([TestComponent2, TestComponent1])).toBeTruthy();
 });
 
 test("has components false", () => {
-    const entity = new Entity(() => { }, () => { });
+    const entity = new Entity(() => { }, () => { }, () => { });
     entity.addAllComponents([TestComponent, TestComponent1]);
     expect(entity.hasComponents([TestComponent2, TestComponent])).toBeFalsy();
 });
