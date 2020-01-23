@@ -8,6 +8,7 @@ import { AwakeCondition } from "./AwakeCondition";
 import ReactiveSystem from "./ReactiveSystem";
 import IReactiveSystemConstructor from "./IReactiveSystemConstructor";
 import Component from "./Component";
+import { SystemBundle, SystemArgs } from "./SystemBundle";
 
 type AwakeGroup = Group;
 
@@ -82,6 +83,29 @@ export default class World {
                     break;
             }
         });
+    }
+
+    addSystemBundle(bundle: SystemBundle, systemArgs?: SystemArgs) {
+        const [reactSystems, executeSystems] = bundle();
+        reactSystems.forEach(s => {
+            const args = systemArgs?.get(s);
+            if (args) {
+                this.addReactiveSystem(s, ...args);
+            }
+            else {
+                this.addReactiveSystem(s);
+            }
+        });
+
+        executeSystems.forEach(s => {
+            const args = systemArgs?.get(s);
+            if (args) {
+                this.addExecuteSystem(s, ...args);
+            }
+            else {
+                this.addExecuteSystem(s);
+            }
+        })
     }
 
     addReactiveSystem(systemConstructor: IReactiveSystemConstructor, ...args: any[]) {

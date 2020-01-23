@@ -3,6 +3,7 @@ import ExecuteSystem from "../engine/ecs-core/ExecuteSystem";
 import Component from "../engine/ecs-core/Component";
 import ReactiveSystem from "../engine/ecs-core/ReactiveSystem";
 import { detectComponentChanges } from "../engine/ecs-core/DetectComponentChanges";
+import { SystemBundle } from "../engine/ecs-core/SystemBundle";
 
 let world: World;
 
@@ -140,4 +141,24 @@ test("cleanup", () => {
     world.update(0);
     expect(world.entities).toEqual([entity1]);
     expect(entity1.hasComponents([TestComponent])).toBeFalsy();
+});
+
+
+
+test("system bundle", () => {
+    class BundleSystem extends ExecuteSystem {
+        update() { }
+    };
+    class BundleSystem1 extends ExecuteSystem {
+        update() { }
+    };
+    const bundle: SystemBundle = () => {
+        return [[TrackTestSystem], [BundleSystem, BundleSystem1]];
+    };
+
+    world.addSystemBundle(bundle);
+
+    expect(world["alwaysAwakeSystems"].keys()).toContain(BundleSystem);
+    expect(world["alwaysAwakeSystems"].keys()).toContain(BundleSystem1);
+    expect(world["reactiveSystemComponentInstance"].keys()).toContain(TrackTestSystem);
 })
