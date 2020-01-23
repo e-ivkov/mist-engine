@@ -1,9 +1,11 @@
-import IComponentConstructor from "./IComponentConstructor";
 import Component from "./Component";
-import Entity from "./Entity";
 
 export interface ChangeDetectable {
     onChange: (() => void) | null
+}
+
+export function isChangeDetectable(object: any): object is ChangeDetectable {
+    return 'onChange' in object;
 }
 
 export function detectComponentChanges<T extends { new(...args: any[]): {} }>(constructor: T) {

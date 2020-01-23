@@ -56,21 +56,30 @@ export default class World {
 
     addEntity(): Entity {
         const entity = new Entity((e, c) => this.onComponentEvent(e, c, ComponentEvent.Added),
-            (e, c) => this.onComponentEvent(e, c, ComponentEvent.Removed));
+            (e, c) => this.onComponentEvent(e, c, ComponentEvent.Removed),
+            (e, c) => this.onComponentEvent(e, c, ComponentEvent.Changed));
         this._entities.add(entity);
         entity.world = this;
         return entity;
     }
 
     onComponentEvent(entity: Entity, component: Component, componentEvent: ComponentEvent) {
-        this.updateGroups(entity, componentEvent);
+        if (componentEvent !== ComponentEvent.Changed)
+            this.updateGroups(entity, componentEvent);
+
         if (!this.active) return;
+
         this.componentReactiveSystem.get(component.constructor as IComponentConstructor)?.forEach((system) => {
-            if (componentEvent === ComponentEvent.Added) {
-                system.onComponentAdded(entity, component);
-            }
-            else {
-                system.onComponentRemoved(entity, component);
+            switch (componentEvent) {
+                case ComponentEvent.Added:
+                    system.onComponentAdded(entity, component);
+                    break;
+                case ComponentEvent.Removed:
+                    system.onComponentRemoved(entity, component);
+                    break;
+                case ComponentEvent.Changed:
+                    system.onComponentChanged(entity, component);
+                    break;
             }
         });
     }

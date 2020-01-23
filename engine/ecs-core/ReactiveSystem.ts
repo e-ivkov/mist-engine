@@ -10,4 +10,6 @@ export default abstract class ReactiveSystem extends System {
     onComponentAdded(entity: Entity, component: Component) { }
 
     onComponentRemoved(entity: Entity, component: Component) { }
+
+    onComponentChanged(entity: Entity, component: Component) { }
 }

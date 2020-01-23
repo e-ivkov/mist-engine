@@ -3,7 +3,8 @@ import Component from "./Component";
 
 export enum ComponentEvent {
     Added,
-    Removed
+    Removed,
+    Changed
 }
 
 export interface ComponentEventFunction {

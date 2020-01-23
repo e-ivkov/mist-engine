@@ -2,6 +2,7 @@ import World from "../engine/ecs-core/World";
 import ExecuteSystem from "../engine/ecs-core/ExecuteSystem";
 import Component from "../engine/ecs-core/Component";
 import ReactiveSystem from "../engine/ecs-core/ReactiveSystem";
+import { detectComponentChanges } from "../engine/ecs-core/DetectComponentChanges";
 
 let world: World;
 
@@ -100,6 +101,33 @@ test("reactive system", () => {
     world.addEntity().addComponent(TestComponent);
     expect(system.onComponentAdded).toBeCalledTimes(2);
     expect(system.onComponentRemoved).toBeCalledTimes(1);
+});
+
+@detectComponentChanges
+class TrackComponent extends Component {
+    a: number;
+
+    constructor(a: number) {
+        super();
+        this.a = a;
+    }
+}
+
+class TrackTestSystem extends ReactiveSystem {
+    getComponentToReact() {
+        return TrackComponent;
+    }
+}
+
+test("reactive system onChange", () => {
+    const system = world.addReactiveSystem(TrackTestSystem);
+    system.onComponentChanged = jest.fn();
+    world.active = true;
+    const entity = world.addEntity().addComponent(TestComponent).addComponent(TrackComponent, 1);
+    const component = entity.getComponent(TrackComponent) as TrackComponent;
+    component.a += 3;
+    expect(system.onComponentChanged).toBeCalledTimes(1);
+    expect(component.a).toEqual(4);
 });
 
 test("cleanup", () => {
