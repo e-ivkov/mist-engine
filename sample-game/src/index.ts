@@ -4,7 +4,7 @@ import DebugMessage from "./DebugMessage";
 import DebugSystem from "./DebugSystem";
 import CanvasInitSystem from "../../engine/canvas-renderer/CanvasInitSystem";
 import CanvasRendererSystem from "../../engine/canvas-renderer/CanvasRendererSystem";
-import CanvasInitRequest from "../../engine/canvas-renderer/CanvasInitRequest";
+import CanvasComponent from "../../engine/canvas-renderer/CanvasComponent";
 
 
 let world = new World();
@@ -14,7 +14,7 @@ world.addExecuteSystem(CanvasRendererSystem);
 let game = new Game([world]);
 game.start();
 
-world.addEntity().addComponent(CanvasInitRequest, 500, 500);
+world.addEntity().addComponent(CanvasComponent, 500, 500);
 
 
 
