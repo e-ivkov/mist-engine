@@ -1,6 +1,6 @@
 import Component from "../ecs-core/Component";
 
-class KeyboardEventComponent extends Component {
+export class KeyboardEventComponent extends Component {
     readonly event: KeyboardEvent;
 
     constructor(event: KeyboardEvent) {
