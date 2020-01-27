@@ -35,7 +35,7 @@ export default class ImageLoaderSystem extends ReactiveSystem {
         });
     }
 
-    getComponentToReact() {
-        return ImageLoadRequest;
+    getComponentsToReact() {
+        return [ImageLoadRequest];
     }
 }

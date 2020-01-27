@@ -15,7 +15,7 @@ export default class InputInitSystem extends ReactiveSystem {
         document.addEventListener("keyup", e => this.onKeyEvent(e, KeyUpEvent));
     }
 
-    getComponentToReact() {
-        return WorldStarted;
+    getComponentsToReact() {
+        return [WorldStarted];
     }
 }

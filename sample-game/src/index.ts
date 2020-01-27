@@ -33,8 +33,8 @@ world.addReactiveSystem(class extends ReactiveSystem {
             .addComponent(PlayerComponent);
     }
 
-    getComponentToReact() {
-        return ImageLoaded;
+    getComponentsToReact() {
+        return [ImageLoaded];
     }
 });
 
@@ -47,8 +47,8 @@ world.addReactiveSystem(class extends ReactiveSystem {
         }
     }
 
-    getComponentToReact() {
-        return KeyDownEvent;
+    getComponentsToReact() {
+        return [KeyDownEvent];
     }
 });
 
