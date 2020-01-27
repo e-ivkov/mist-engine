@@ -7,7 +7,7 @@ import ReactiveSystem from "../../engine/ecs-core/ReactiveSystem";
 import { ImageLoaded } from "../../engine/canvas-renderer/EventComponents";
 import ImageComponent from "../../engine/canvas-renderer/ImageComponent";
 import PositionComponent from "../../engine/canvas-renderer/PositionComponent";
-import { KeyDownEvent } from "../../engine/input-management/EventComponents";
+import { KeyDownEvent, MouseDownEvent } from "../../engine/input-management/EventComponents";
 import Component from "../../engine/ecs-core/Component";
 import Entity from "../../engine/ecs-core/Entity";
 import getInputBundle from "../../engine/input-management/InputBundle";
@@ -41,14 +41,17 @@ world.addReactiveSystem(class extends ReactiveSystem {
 world.addReactiveSystem(class extends ReactiveSystem {
     onComponentAdded(e: Entity, c: Component) {
         const player = world.getSingletonComponent(PlayerComponent)?.entity;
-        if (player && (c as KeyDownEvent).event.key === " ") {
+        if ("key" in (c as any)["event"]) {
+            if ((c as KeyDownEvent).event.key !== " ") return;
+        }
+        if (player) {
             const pos = player.getComponent(PositionComponent) as PositionComponent;
             pos.x += 10;
         }
     }
 
     getComponentsToReact() {
-        return [KeyDownEvent];
+        return [KeyDownEvent, MouseDownEvent];
     }
 });
 
