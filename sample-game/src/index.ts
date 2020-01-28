@@ -41,8 +41,8 @@ world.addReactiveSystem(class extends ReactiveSystem {
 world.addReactiveSystem(class extends ReactiveSystem {
     onComponentAdded(e: Entity, c: Component) {
         const player = world.getSingletonComponent(PlayerComponent)?.entity;
-        if ("key" in (c as any)["event"]) {
-            if ((c as KeyDownEvent).event.key !== " ") return;
+        if (c instanceof KeyDownEvent) {
+            if (c.event.key !== " ") return;
         }
         if (player) {
             const pos = player.getComponent(PositionComponent) as PositionComponent;
