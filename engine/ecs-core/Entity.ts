@@ -26,6 +26,7 @@ export default class Entity {
 
     addComponent(componentConstructor: IComponentConstructor, ...args: any) {
         const component = new componentConstructor(...args);
+        component.entity = this;
         if (component.isSingleton()) {
             if (!this.world?.tryAddSingletonComponent(component)) {
                 throw "Can not add singleton component ${component} to world ${world}";

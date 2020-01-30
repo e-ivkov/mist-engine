@@ -21,7 +21,7 @@ export default class CanvasInitSystem extends ReactiveSystem {
         component.canvas!.height = component.height;
     }
 
-    getComponentToReact() {
-        return CanvasComponent;
+    getComponentsToReact() {
+        return [CanvasComponent];
     }
 }
