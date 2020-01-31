@@ -69,4 +69,8 @@ export class Vector2 {
         const y = this.x * Math.sin(angle) + this.y * Math.cos(angle);
         return new Vector2(x, y);
     }
+
+    clone() {
+        return new Vector2(this.x, this.y);
+    }
 }
