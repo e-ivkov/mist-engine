@@ -5,6 +5,7 @@ import Group from "../ecs-core/Group";
 import PositionComponent from "./PositionComponent";
 import ImageComponent from "./ImageComponent";
 import LoadedImagesComponent from "./LoadedImagesComponent";
+import { Vector2 } from "../CommonTypes";
 
 export default class CanvasRendererSystem extends ExecuteSystem {
 
@@ -34,10 +35,17 @@ export default class CanvasRendererSystem extends ExecuteSystem {
             const image = e.getComponent(ImageComponent) as ImageComponent;
             const pos = e.getComponent(PositionComponent) as PositionComponent;
             const htmlImg = loadedImages.imagesByFilename.get(image.fileName);
+
             if (htmlImg) {
+                //get left top corner of image
+                const pivotScaled = new Vector2(image.pivot.x * htmlImg.width / 2, image.pivot.y * htmlImg.height / 2);
+                const imgCenter = pos.position.add(pivotScaled.opposite);
+                const imgTopLeft = imgCenter.add(new Vector2(-htmlImg.width / 2, htmlImg.height / 2));
+
+                //translate from center coordiates to top-left
                 context?.drawImage(htmlImg,
-                    canvasComponent.width / 2 + pos.position.x,
-                    canvasComponent.height / 2 - pos.position.y);
+                    canvasComponent.width / 2 + imgTopLeft.x,
+                    canvasComponent.height / 2 - imgTopLeft.y);
             }
         })
     }
