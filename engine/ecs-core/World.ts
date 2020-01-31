@@ -221,7 +221,8 @@ export default class World {
     }
 
     update(deltaTime: number) {
-        this.awakeSystems.forEach((system) => system.update(deltaTime));
+        this.awakeSystems.forEach((system) => system.update(deltaTime,
+            this.systems.get(system.constructor as IExecuteSystemConstructor)?.[1].matchingEntities));
         this.alwaysAwakeSystems.forEach((system) => system.update(deltaTime));
 
         if (this.cleanUpComponentStack.length > 0 || this.cleanUpEntityStack.length > 0) {
