@@ -1,12 +1,11 @@
 import Component from "../ecs-core/Component";
+import { Vector2 } from "../CommonTypes";
 
 export default class PositionComponent extends Component {
-    x: number;
-    y: number;
+    position: Vector2;
 
-    constructor(x?: number, y?: number) {
+    constructor(position?: Vector2) {
         super();
-        this.x = x ?? 0;
-        this.y = y ?? 0;
+        this.position = position ?? Vector2.zero;
     }
 }

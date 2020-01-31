@@ -11,6 +11,7 @@ import { KeyDownEvent, MouseDownEvent } from "../../engine/input-management/Even
 import Component from "../../engine/ecs-core/Component";
 import Entity from "../../engine/ecs-core/Entity";
 import getInputBundle from "../../engine/input-management/InputBundle";
+import { Vector2 } from "../../engine/CommonTypes";
 
 
 let world = new World();
@@ -29,7 +30,7 @@ class PlayerComponent extends Component {
 world.addReactiveSystem(class extends ReactiveSystem {
     onComponentAdded() {
         this.world.addEntity().addComponent(ImageComponent, "planeRed1.png")
-            .addComponent(PositionComponent, 200, 200)
+            .addComponent(PositionComponent, new Vector2(200, 200))
             .addComponent(PlayerComponent);
     }
 
@@ -46,7 +47,7 @@ world.addReactiveSystem(class extends ReactiveSystem {
         }
         if (player) {
             const pos = player.getComponent(PositionComponent) as PositionComponent;
-            pos.x += 10;
+            pos.position.x += 10;
         }
     }
 
