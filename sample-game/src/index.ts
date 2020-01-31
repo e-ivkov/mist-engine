@@ -43,6 +43,10 @@ world.addReactiveSystem(class extends ReactiveSystem {
 });
 
 world.addReactiveSystem(class extends ReactiveSystem {
+
+    readonly upVel = Vector2.up.mul(0.8);
+    readonly gravity = Vector2.down.mul(0.002);
+
     onComponentAdded(e: Entity, c: Component) {
         const player = world.getSingletonComponent(PlayerComponent)?.entity;
         if (c instanceof KeyDownEvent) {
@@ -50,11 +54,11 @@ world.addReactiveSystem(class extends ReactiveSystem {
         }
         if (player) {
             const kinem = player.getComponent(KinematicComponent);
-            if (!kinem) {
-                player.addComponent(KinematicComponent, Vector2.right.mul(0.2));
+            if (!(kinem instanceof KinematicComponent)) {
+                player.addComponent(KinematicComponent, this.upVel.clone(), this.gravity.clone());
             }
             else {
-                (kinem as KinematicComponent).velocity = (kinem as KinematicComponent).velocity.opposite;
+                kinem.velocity = this.upVel.clone()
             }
         }
     }
