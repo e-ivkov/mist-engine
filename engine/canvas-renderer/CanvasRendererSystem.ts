@@ -2,7 +2,7 @@ import ExecuteSystem from "../ecs-core/ExecuteSystem";
 import CanvasComponent from "./CanvasComponent";
 import World from "../ecs-core/World";
 import Group from "../ecs-core/Group";
-import PositionComponent from "./PositionComponent";
+import TransformComponent from "./PositionComponent";
 import ImageComponent from "./ImageComponent";
 import LoadedImagesComponent from "./LoadedImagesComponent";
 import { Vector2 } from "../CommonTypes";
@@ -14,7 +14,7 @@ export default class CanvasRendererSystem extends ExecuteSystem {
 
     constructor(world: World) {
         super(world);
-        this.imageGroup = world.addGroup([PositionComponent, ImageComponent]);
+        this.imageGroup = world.addGroup([TransformComponent, ImageComponent]);
         this.imageMapGroup = world.addGroup([LoadedImagesComponent]);
     }
 
@@ -33,19 +33,24 @@ export default class CanvasRendererSystem extends ExecuteSystem {
 
         this.imageGroup.matchingEntities.forEach(e => {
             const image = e.getComponent(ImageComponent) as ImageComponent;
-            const pos = e.getComponent(PositionComponent) as PositionComponent;
+            const transform = e.getComponent(TransformComponent) as TransformComponent;
             const htmlImg = loadedImages.imagesByFilename.get(image.fileName);
 
             if (htmlImg) {
+                const imgWidth = htmlImg.width * transform.scale.x;
+                const imgHeight = htmlImg.height * transform.scale.y;
+
                 //get left top corner of image
-                const pivotScaled = new Vector2(image.pivot.x * htmlImg.width / 2, image.pivot.y * htmlImg.height / 2);
-                const imgCenter = pos.position.add(pivotScaled.opposite);
-                const imgTopLeft = imgCenter.add(new Vector2(-htmlImg.width / 2, htmlImg.height / 2));
+                const pivotScaled = new Vector2(image.pivot.x * imgWidth / 2, image.pivot.y * imgHeight / 2);
+                const imgCenter = transform.position.add(pivotScaled.opposite);
+                const imgTopLeft = imgCenter.add(new Vector2(-imgWidth / 2, imgWidth / 2));
 
                 //translate from center coordiates to top-left
                 context?.drawImage(htmlImg,
                     canvasComponent.width / 2 + imgTopLeft.x,
-                    canvasComponent.height / 2 - imgTopLeft.y);
+                    canvasComponent.height / 2 - imgTopLeft.y,
+                    imgWidth,
+                    imgHeight);
             }
         })
     }
