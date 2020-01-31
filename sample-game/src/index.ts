@@ -33,7 +33,7 @@ class PlayerComponent extends Component {
 world.addReactiveSystem(class extends ReactiveSystem {
     onComponentAdded() {
         this.world.addEntity().addComponent(ImageComponent, "planeRed1.png")
-            .addComponent(PositionComponent, new Vector2(200, 200))
+            .addComponent(PositionComponent)
             .addComponent(PlayerComponent);
     }
 
@@ -58,7 +58,7 @@ world.addReactiveSystem(class extends ReactiveSystem {
                 player.addComponent(KinematicComponent, this.upVel.clone(), this.gravity.clone());
             }
             else {
-                kinem.velocity = this.upVel.clone()
+                kinem.velocity = this.upVel.clone();
             }
         }
     }

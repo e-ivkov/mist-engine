@@ -35,7 +35,9 @@ export default class CanvasRendererSystem extends ExecuteSystem {
             const pos = e.getComponent(PositionComponent) as PositionComponent;
             const htmlImg = loadedImages.imagesByFilename.get(image.fileName);
             if (htmlImg) {
-                context?.drawImage(htmlImg, pos.position.x, pos.position.y);
+                context?.drawImage(htmlImg,
+                    canvasComponent.width / 2 + pos.position.x,
+                    canvasComponent.height / 2 - pos.position.y);
             }
         })
     }

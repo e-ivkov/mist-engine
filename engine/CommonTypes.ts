@@ -1,7 +1,7 @@
 /**
- * vector adopts coordinate system starting from left-top corner.
- * X increases to the right
- * Y increases to the bottom
+ * Vector adopts coordinate system with origin point in center
+ * Positive X axis direction to the right
+ * Positive Y axis direction upwards
  */
 export class Vector2 {
     x: number;
@@ -17,7 +17,7 @@ export class Vector2 {
     }
 
     static get up() {
-        return new Vector2(0, -1);
+        return new Vector2(0, 1);
     }
 
     static get right() {
