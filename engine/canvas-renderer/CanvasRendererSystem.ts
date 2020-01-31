@@ -40,17 +40,24 @@ export default class CanvasRendererSystem extends ExecuteSystem {
                 const imgWidth = htmlImg.width * transform.scale.x;
                 const imgHeight = htmlImg.height * transform.scale.y;
 
-                //get left top corner of image
-                const pivotScaled = new Vector2(image.pivot.x * imgWidth / 2, image.pivot.y * imgHeight / 2);
-                const imgCenter = transform.position.add(pivotScaled.opposite);
-                const imgTopLeft = imgCenter.add(new Vector2(-imgWidth / 2, imgWidth / 2));
+                context?.save();
+                //translate to pivot
+                context?.translate(canvasComponent.width / 2 + transform.position.x,
+                    canvasComponent.height / 2 - transform.position.y);
+                context?.rotate(transform.rotation * Math.PI / 180);
+
+                //get left top corner of image vector
+                const pivotScaled = new Vector2(image.pivot.x * imgWidth, -image.pivot.y * imgHeight);
+                const imgTopLeft = pivotScaled.opposite.add(new Vector2(-imgWidth / 2, -imgHeight / 2));
 
                 //translate from center coordiates to top-left
                 context?.drawImage(htmlImg,
-                    canvasComponent.width / 2 + imgTopLeft.x,
-                    canvasComponent.height / 2 - imgTopLeft.y,
+                    imgTopLeft.x,
+                    imgTopLeft.y,
                     imgWidth,
                     imgHeight);
+
+                context?.restore();
             }
         })
     }
