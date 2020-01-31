@@ -4,6 +4,7 @@ import Component from "../engine/ecs-core/Component";
 import ReactiveSystem from "../engine/ecs-core/ReactiveSystem";
 import { detectComponentChanges } from "../engine/ecs-core/DetectComponentChanges";
 import { SystemBundle } from "../engine/ecs-core/SystemBundle";
+import Entity from "../engine/ecs-core/Entity";
 
 let world: World;
 
@@ -61,6 +62,34 @@ test("awake group system", () => {
     entity.addComponent(TestComponent1);
     world.update(0);
     expect(updateCallback).toBeCalledTimes(1);
+});
+
+class TestSystem2 extends ExecuteSystem {
+    entities: Entity[] = new Array();
+
+    update(deltaTime: number, entities: ReadonlyArray<Entity>) {
+        this.entities = Array.from(entities);
+    }
+
+    getAwakeCondition() {
+        return [TestComponent]
+    }
+}
+
+test("entity pass to the systems", () => {
+    const system = world.addExecuteSystem(TestSystem2) as TestSystem2;
+    const entity = world.addEntity().addComponent(TestComponent1);
+    world.update(0);
+    expect(system.entities).toHaveLength(0);
+
+    entity.addComponent(TestComponent);
+    world.update(0);
+    expect(system.entities).toContain(entity);
+
+    const entity1 = world.addEntity().addComponent(TestComponent);
+    world.update(0);
+    expect(system.entities).toContain(entity);
+    expect(system.entities).toContain(entity1);
 });
 
 test("remove entity", () => {
