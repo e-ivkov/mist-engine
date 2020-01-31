@@ -87,8 +87,8 @@ test("remove always awake system", () => {
 });
 
 class ReactiveTestSystem extends ReactiveSystem {
-    getComponentToReact() {
-        return TestComponent;
+    getComponentsToReact() {
+        return [TestComponent];
     }
 }
 
@@ -115,8 +115,8 @@ class TrackComponent extends Component {
 }
 
 class TrackTestSystem extends ReactiveSystem {
-    getComponentToReact() {
-        return TrackComponent;
+    getComponentsToReact() {
+        return [TrackComponent];
     }
 }
 
@@ -160,5 +160,5 @@ test("system bundle", () => {
 
     expect(world["alwaysAwakeSystems"].keys()).toContain(BundleSystem);
     expect(world["alwaysAwakeSystems"].keys()).toContain(BundleSystem1);
-    expect(world["reactiveSystemComponentInstance"].keys()).toContain(TrackTestSystem);
+    expect(world["reactiveSystemComponentInstances"].keys()).toContain(TrackTestSystem);
 })

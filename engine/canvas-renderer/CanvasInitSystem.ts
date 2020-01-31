@@ -1,23 +1,27 @@
 import ReactiveSystem from "../ecs-core/ReactiveSystem";
-import CanvasInitRequest from "./CanvasInitRequest";
 import CanvasComponent from "./CanvasComponent";
 
 export default class CanvasInitSystem extends ReactiveSystem {
 
     onComponentAdded() {
-        const entity = this.world.entitiesWithComponents([CanvasInitRequest])[0];
-        const request = (entity.getComponent(CanvasInitRequest) as CanvasInitRequest);
+        const component = this.world.getSingletonComponent(CanvasComponent)! as CanvasComponent;
 
         const canvas = document.createElement('canvas');
-        canvas.width = request.width;
-        canvas.height = request.height;
+        canvas.width = component.width;
+        canvas.height = component.height;
 
         document.body.appendChild(canvas);
 
-        this.world.addEntity().addComponent(CanvasComponent, canvas);
+        component.canvas = canvas;
     }
 
-    getComponentToReact() {
-        return CanvasInitRequest;
+    onComponentChanged() {
+        const component = this.world.getSingletonComponent(CanvasComponent)! as CanvasComponent;
+        component.canvas!.width = component.width;
+        component.canvas!.height = component.height;
+    }
+
+    getComponentsToReact() {
+        return [CanvasComponent];
     }
 }

@@ -19,7 +19,7 @@ export default class World {
     private awakeSystems: Set<ExecuteSystem>;
     private alwaysAwakeSystems: Map<IExecuteSystemConstructor, ExecuteSystem>;
     private componentReactiveSystem: Map<IComponentConstructor, Set<ReactiveSystem>>;
-    private reactiveSystemComponentInstance: Map<IReactiveSystemConstructor, [IComponentConstructor, ReactiveSystem]>;
+    private reactiveSystemComponentInstances: Map<IReactiveSystemConstructor, [IComponentConstructor[], ReactiveSystem]>;
     private _singletonComponents: Map<IComponentConstructor, Component>;
     cleanUpComponentStack: [Entity, IComponentConstructor][];
     cleanUpEntityStack: Entity[];
@@ -32,7 +32,7 @@ export default class World {
         this.awakeSystems = new Set();
         this.alwaysAwakeSystems = new Map();
         this.componentReactiveSystem = new Map();
-        this.reactiveSystemComponentInstance = new Map();
+        this.reactiveSystemComponentInstances = new Map();
         this._singletonComponents = new Map();
 
         this.cleanUpComponentStack = new Array();
@@ -110,23 +110,29 @@ export default class World {
 
     addReactiveSystem(systemConstructor: IReactiveSystemConstructor, ...args: any[]) {
         const system = new systemConstructor(this, ...args);
-        const component = system.getComponentToReact();
-        this.reactiveSystemComponentInstance.set(systemConstructor, [component, system]);
-        if (this.componentReactiveSystem.has(component)) {
-            this.componentReactiveSystem.get(component)?.add(system);
-        }
-        else {
-            this.componentReactiveSystem.set(component, new Set([system]));
-        }
+        const components = system.getComponentsToReact();
+        this.reactiveSystemComponentInstances.set(systemConstructor, [components, system]);
+        components.forEach(component => {
+            if (this.componentReactiveSystem.has(component)) {
+                this.componentReactiveSystem.get(component)?.add(system);
+            }
+            else {
+                this.componentReactiveSystem.set(component, new Set([system]));
+            }
+        });
         return system;
     }
 
     removeReactiveSystem(systemConstructor: IReactiveSystemConstructor) {
-        const [component, system] = this.reactiveSystemComponentInstance.get(systemConstructor);
-        if (component === undefined) return false;
-        return this.componentReactiveSystem
-            .get(component as IComponentConstructor)
-            ?.delete(system as ReactiveSystem);
+        const [components, system] = this.reactiveSystemComponentInstances.get(systemConstructor);
+        this.reactiveSystemComponentInstances.delete(systemConstructor);
+        if (system === undefined) return false;
+        (components as IComponentConstructor[]).forEach(component => {
+            this.componentReactiveSystem
+                .get(component as IComponentConstructor)
+                ?.delete(system as ReactiveSystem);
+        });
+        return true;
     }
 
     addExecuteSystem(systemConstructor: IExecuteSystemConstructor, ...args: any[]) {

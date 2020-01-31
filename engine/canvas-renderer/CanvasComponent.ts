@@ -1,15 +1,20 @@
 import Component from "../ecs-core/Component";
+import { detectComponentChanges } from "../ecs-core/DetectComponentChanges";
 
+@detectComponentChanges
 export default class CanvasComponent extends Component {
-    private _canvas: HTMLCanvasElement;
+    public canvas: HTMLCanvasElement | null = null;
     backgroundColor = "black";
+    public width: number;
+    public height: number;
 
-    get canvas() {
-        return this._canvas;
+    constructor(width: number, height: number) {
+        super();
+        this.width = width;
+        this.height = height;
     }
 
-    constructor(canvas: HTMLCanvasElement) {
-        super();
-        this._canvas = canvas;
+    isSingleton() {
+        return true;
     }
 }
