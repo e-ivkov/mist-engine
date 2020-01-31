@@ -12,11 +12,14 @@ import Component from "../../engine/ecs-core/Component";
 import Entity from "../../engine/ecs-core/Entity";
 import getInputBundle from "../../engine/input-management/InputBundle";
 import { Vector2 } from "../../engine/CommonTypes";
+import getPhysicsBundle from "../../engine/physics/PhysicsBundle";
+import KinematicComponent from "../../engine/physics/KinematicComponent";
 
 
 let world = new World();
 world.addSystemBundle(getRendererBundle());
 world.addSystemBundle(getInputBundle());
+world.addSystemBundle(getPhysicsBundle());
 
 let game = new Game([world]);
 game.start();
@@ -46,8 +49,13 @@ world.addReactiveSystem(class extends ReactiveSystem {
             if (c.event.key !== " ") return;
         }
         if (player) {
-            const pos = player.getComponent(PositionComponent) as PositionComponent;
-            pos.position.x += 10;
+            const kinem = player.getComponent(KinematicComponent);
+            if (!kinem) {
+                player.addComponent(KinematicComponent, Vector2.right.mul(0.2));
+            }
+            else {
+                (kinem as KinematicComponent).velocity = (kinem as KinematicComponent).velocity.opposite;
+            }
         }
     }
 
