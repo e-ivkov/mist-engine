@@ -32,6 +32,8 @@ jobs:
 
     - name: generate docs
       run: |
+        git config --global user.email "e.o.ivkov@gmail.com"
+        git config --global user.name "Egor Ivkov"
         git clone https://github.com/eadventurous/mist-engine-docs.git
         npx typedoc
         mv docs mist-engine-docs
