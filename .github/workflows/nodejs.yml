@@ -39,7 +39,9 @@ jobs:
         npx typedoc
         bash -c '[ -d mist-engine-docs/docs ] && rm -rf mist-engine-docs/docs'
         mv docs mist-engine-docs
-        cd mist-engine-docs
+        cd mist-engine-docs/docs
+        touch ".nojekyll"
+        cd ..
         git add .
         git commit -m "Update docs"
 
