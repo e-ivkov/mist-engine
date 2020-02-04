@@ -7,6 +7,9 @@ import ImageComponent from "./ImageComponent";
 import LoadedImagesComponent from "./LoadedImagesComponent";
 import { Vector2 } from "../CommonTypes";
 
+/**
+ * The 2D renderer that uses HTML5 Canvas component with its Canvas API.
+ */
 export default class CanvasRendererSystem extends ExecuteSystem {
 
     imageGroup: Group;
