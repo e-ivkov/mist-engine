@@ -37,6 +37,7 @@ jobs:
         git config --global user.name "Egor Ivkov"
         git clone https://github.com/eadventurous/mist-engine-docs.git
         npx typedoc
+        bash -c '[ -d mist-engine-docs/docs ] && rm -rf mist-engine-docs/docs'
         mv docs mist-engine-docs
         cd mist-engine-docs
         git add .
