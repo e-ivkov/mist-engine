@@ -50,7 +50,7 @@ export default class CanvasRendererSystem extends ExecuteSystem {
                 const pivotScaled = new Vector2(image.pivot.x * imgWidth, -image.pivot.y * imgHeight);
                 const imgTopLeft = pivotScaled.opposite.add(new Vector2(-imgWidth / 2, -imgHeight / 2));
 
-                //translate from center coordiates to top-left
+                //translate from the pivot taking into account its relative coordinates
                 context?.drawImage(htmlImg,
                     imgTopLeft.x,
                     imgTopLeft.y,
