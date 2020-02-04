@@ -24,11 +24,24 @@ jobs:
         npm run test-coverage
       env:
         CI: true
-
-    - name: generate docs
-      run: npx typedoc
         
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: generate docs
+      run: |
+        git clone https://github.com/eadventurous/mist-engine-docs.git
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        npx typedoc
+        mv docs mist-engine-docs
+        cd mist-engine-docs
+        git commit -m "Update docs" -a
+
+    - name: Push docs
+      uses: ad-m/github-push-action@v0.5.0
+      with:
+        repository: "mist-engine-docs"
+        github_token: ${{ secrets.DOCS_TOKEN }}
