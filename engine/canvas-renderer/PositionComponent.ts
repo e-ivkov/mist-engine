@@ -1,12 +1,15 @@
 import Component from "../ecs-core/Component";
+import { Vector2 } from "../CommonTypes";
 
-export default class PositionComponent extends Component {
-    x: number;
-    y: number;
+export default class TransformComponent extends Component {
+    position: Vector2;
+    rotation: number;
+    scale: Vector2;
 
-    constructor(x?: number, y?: number) {
+    constructor(position?: Vector2, rotation?: number, scale?: Vector2) {
         super();
-        this.x = x ?? 0;
-        this.y = y ?? 0;
+        this.position = position ?? Vector2.zero;
+        this.rotation = rotation ?? 0;
+        this.scale = scale ?? new Vector2(1, 1);
     }
 }
