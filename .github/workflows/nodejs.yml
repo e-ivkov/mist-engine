@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v1
@@ -33,8 +33,6 @@ jobs:
     - name: generate docs
       run: |
         git clone https://github.com/eadventurous/mist-engine-docs.git
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
         npx typedoc
         mv docs mist-engine-docs
         cd mist-engine-docs
