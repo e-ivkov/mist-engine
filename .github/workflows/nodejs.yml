@@ -35,11 +35,12 @@ jobs:
       run: |
         git config --global user.email "e.o.ivkov@gmail.com"
         git config --global user.name "Egor Ivkov"
-        git clone https://github.com/eadventurous/mist-engine-docs.git
+        bash -c '[ -d docs ] && rm -rf docs'
+        git clone https://github.com/eadventurous/mist-engine-docs.git docs
+        rm -rf docs/*
         npx typedoc
-        bash -c '[ -d mist-engine-docs/docs ] && rm -rf mist-engine-docs/docs'
-        mv docs mist-engine-docs
-        cd mist-engine-docs
+        cd docs
+        touch .nojekyll
         git add .
         git commit -m "Update docs"
 
@@ -48,5 +49,5 @@ jobs:
       uses: ad-m/github-push-action@v0.5.0
       with:
         repository: "eadventurous/mist-engine-docs"
-        directory: "mist-engine-docs"
+        directory: "docs"
         github_token: ${{ secrets.DOCS_TOKEN }}
