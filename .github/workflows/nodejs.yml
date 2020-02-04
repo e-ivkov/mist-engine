@@ -31,6 +31,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: generate docs
+      if: github.ref == 'refs/heads/master'
       run: |
         git config --global user.email "e.o.ivkov@gmail.com"
         git config --global user.name "Egor Ivkov"
@@ -38,9 +39,11 @@ jobs:
         npx typedoc
         mv docs mist-engine-docs
         cd mist-engine-docs
-        git commit -m "Update docs" -a
+        git add .
+        git commit -m "Update docs"
 
     - name: Push docs
+      if: github.ref == 'refs/heads/master'
       uses: ad-m/github-push-action@v0.5.0
       with:
         repository: "mist-engine-docs"
