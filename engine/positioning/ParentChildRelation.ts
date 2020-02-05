@@ -24,6 +24,12 @@ export function getWithoutParent(world: World): ReadonlyArray<Entity> {
     return world.entities.filter(e => e.hasComponents([ParentComponent]));
 }
 
+/**
+ * The only right way to add child to an entity is to use this function.
+ * 
+ * @param parent parent
+ * @param child this entity TransformComponent will now be relative to the parent
+ */
 export function addChild(parent: Entity, child: Entity) {
     child.removeComponent(ParentComponent);
     child.addComponent(ParentComponent, parent);
@@ -35,6 +41,13 @@ export function addChild(parent: Entity, child: Entity) {
     }
 }
 
+/**
+ * The only right way to remove child from an entity is to use this function.
+ * 
+ * @param parent parent
+ * @param child this entity TransformComponent will now be relative to the coordinate system origin point
+ * @returns true if both entities indeed had a child-parent relationship and it was successfuly removed
+ */
 export function removeChild(parent: Entity, child: Entity) {
     if (parent.hasComponents([ChildrenComponent])) {
         (parent.getComponent(ChildrenComponent) as ChildrenComponent).children.delete(child);
