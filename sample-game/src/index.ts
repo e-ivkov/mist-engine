@@ -6,7 +6,7 @@ import ImageLoadRequest from "../../engine/canvas-renderer/ImageLoadRequest";
 import ReactiveSystem from "../../engine/ecs-core/ReactiveSystem";
 import { ImageLoaded } from "../../engine/canvas-renderer/EventComponents";
 import ImageComponent from "../../engine/canvas-renderer/ImageComponent";
-import TransformComponent from "../../engine/canvas-renderer/PositionComponent";
+import TransformComponent from "../../engine/positioning/PositionComponent";
 import { KeyDownEvent, MouseDownEvent } from "../../engine/input-management/EventComponents";
 import Component from "../../engine/ecs-core/Component";
 import Entity from "../../engine/ecs-core/Entity";

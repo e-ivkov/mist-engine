@@ -2,7 +2,7 @@ import ExecuteSystem from "../ecs-core/ExecuteSystem";
 import CanvasComponent from "./CanvasComponent";
 import World from "../ecs-core/World";
 import Group from "../ecs-core/Group";
-import TransformComponent from "./PositionComponent";
+import TransformComponent from "../positioning/PositionComponent";
 import ImageComponent from "./ImageComponent";
 import LoadedImagesComponent from "./LoadedImagesComponent";
 import { Vector2 } from "../CommonTypes";
