@@ -6,6 +6,8 @@ import TransformComponent from "../positioning/PositionComponent";
 import ImageComponent from "./ImageComponent";
 import LoadedImagesComponent from "./LoadedImagesComponent";
 import { Vector2 } from "../CommonTypes";
+import Entity from "../ecs-core/Entity";
+import { ParentComponent } from "../positioning/ParentChildRelation";
 
 /**
  * The 2D renderer that uses HTML5 Canvas component with its Canvas API.
@@ -34,21 +36,35 @@ export default class CanvasRendererSystem extends ExecuteSystem {
         let loadedImages = entities[0]
             .getComponent(LoadedImagesComponent) as LoadedImagesComponent;
 
+        context.save();
+        context.translate(canvasComponent.width / 2,
+            canvasComponent.height / 2);
+
         this.imageGroup.matchingEntities.forEach(e => {
             const image = e.getComponent(ImageComponent) as ImageComponent;
-            const transform = e.getComponent(TransformComponent) as TransformComponent;
             const htmlImg = loadedImages.imagesByFilename.get(image.fileName);
 
             if (htmlImg) {
-                const imgWidth = htmlImg.width;
-                const imgHeight = htmlImg.height;
+
+                let entity: Entity | undefined = e;
+                const transforms = new Array<TransformComponent>();
+                do {
+                    transforms.push(entity.getComponent(TransformComponent) as TransformComponent);
+                    entity = (entity.getComponent(ParentComponent) as (ParentComponent | undefined))?.parent;
+                } while (entity)
 
                 context?.save();
-                //translate to pivot
-                context?.translate(canvasComponent.width / 2 + transform.position.x,
-                    canvasComponent.height / 2 - transform.position.y);
-                context?.rotate(transform.rotation * Math.PI / 180);
-                context?.scale(transform.scale.x, transform.scale.y);
+
+                transforms.reverse().forEach(t => {
+                    //translate to pivot
+                    context?.translate(t.position.x,
+                        - t.position.y);
+                    context?.rotate(t.rotation * Math.PI / 180);
+                    context?.scale(t.scale.x, t.scale.y);
+                })
+
+                const imgWidth = htmlImg.width;
+                const imgHeight = htmlImg.height;
 
                 //get left top corner of image vector
                 const pivotScaled = new Vector2(image.pivot.x * imgWidth, -image.pivot.y * imgHeight);
@@ -63,7 +79,9 @@ export default class CanvasRendererSystem extends ExecuteSystem {
 
                 context?.restore();
             }
-        })
+        });
+
+        context.restore();
     }
 
     getAwakeCondition() {
