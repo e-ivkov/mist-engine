@@ -40,14 +40,15 @@ export default class CanvasRendererSystem extends ExecuteSystem {
             const htmlImg = loadedImages.imagesByFilename.get(image.fileName);
 
             if (htmlImg) {
-                const imgWidth = htmlImg.width * transform.scale.x;
-                const imgHeight = htmlImg.height * transform.scale.y;
+                const imgWidth = htmlImg.width;
+                const imgHeight = htmlImg.height;
 
                 context?.save();
                 //translate to pivot
                 context?.translate(canvasComponent.width / 2 + transform.position.x,
                     canvasComponent.height / 2 - transform.position.y);
                 context?.rotate(transform.rotation * Math.PI / 180);
+                context?.scale(transform.scale.x, transform.scale.y);
 
                 //get left top corner of image vector
                 const pivotScaled = new Vector2(image.pivot.x * imgWidth, -image.pivot.y * imgHeight);
