@@ -6,8 +6,7 @@ import TransformComponent from "../positioning/TransformComponent";
 import ImageComponent from "./ImageComponent";
 import LoadedImagesComponent from "./LoadedImagesComponent";
 import { Vector2 } from "../CommonTypes";
-import Entity from "../ecs-core/Entity";
-import { ParentComponent } from "../positioning/ParentChildRelation";
+import {getGlobalTransform } from "../positioning/ParentChildRelation";
 
 /**
  * The 2D renderer that uses HTML5 Canvas component with its Canvas API.
@@ -47,8 +46,9 @@ export default class CanvasRendererSystem extends ExecuteSystem {
             if (htmlImg) {
 
                 context?.save();
-
-                context?.setTransform(context.getTransform().multiply(this.getPivotGlobalTransform(e)));
+                
+                //we condier that by get global transform we get image pivot position
+                context?.setTransform(context.getTransform().multiply(getGlobalTransform(e)));
 
                 const imgWidth = htmlImg.width;
                 const imgHeight = htmlImg.height;
@@ -69,32 +69,6 @@ export default class CanvasRendererSystem extends ExecuteSystem {
         });
 
         context.restore();
-    }
-
-    /**
-     * @param e entity for which we want to know global position of it's pivot point
-     * 
-     * @returns global transform matrix of the entities pivot relative to the sceen center
-     */
-    getPivotGlobalTransform(e: Entity) {
-        let entity: Entity | undefined = e;
-        const transforms = new Array<TransformComponent>();
-        do {
-            transforms.push(entity.getComponent(TransformComponent) as TransformComponent);
-            entity = (entity.getComponent(ParentComponent) as (ParentComponent | undefined))?.parent;
-        } while (entity)
-
-        let matrix = new DOMMatrix();
-
-        transforms.reverse().forEach(t => {
-            //translate to pivot
-            matrix.translateSelf(t.position.x,
-                - t.position.y);
-            matrix.rotateSelf(0, 0, t.rotation);
-            matrix.scaleSelf(t.scale.x, t.scale.y);
-        })
-
-        return matrix;
     }
 
     getAwakeCondition() {

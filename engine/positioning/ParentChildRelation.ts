@@ -1,6 +1,7 @@
 import Component from "../ecs-core/Component";
 import Entity from "../ecs-core/Entity";
 import World from "../ecs-core/World";
+import TransformComponent from "./TransformComponent";
 
 export class ParentComponent extends Component {
     readonly parent: Entity;
@@ -58,4 +59,30 @@ export function removeChild(parent: Entity, child: Entity) {
         return false;
     }
     return false;
+}
+
+/**
+ * @param e entity for which we want to know it's global position
+ * 
+ * @returns global transform matrix of the entity relative to the sceen center
+ */
+export function getGlobalTransform(e: Entity) {
+    let entity: Entity | undefined = e;
+    const transforms = new Array<TransformComponent>();
+    do {
+        transforms.push(entity.getComponent(TransformComponent) as TransformComponent);
+        entity = (entity.getComponent(ParentComponent) as (ParentComponent | undefined))?.parent;
+    } while (entity)
+
+    let matrix = new DOMMatrix();
+
+    transforms.reverse().forEach(t => {
+        //translate to pivot
+        matrix.translateSelf(t.position.x,
+            - t.position.y);
+        matrix.rotateSelf(0, 0, t.rotation);
+        matrix.scaleSelf(t.scale.x, t.scale.y);
+    })
+
+    return matrix;
 }
