@@ -47,7 +47,7 @@ export default class CanvasRendererSystem extends ExecuteSystem {
 
                 context?.save();
                 
-                //we condier that by get global transform we get image pivot position
+                //we consider that by getting global transform we get image pivot position
                 context?.setTransform(context.getTransform().multiply(getGlobalTransform(e)));
 
                 const imgWidth = htmlImg.width;
