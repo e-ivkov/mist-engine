@@ -1,7 +1,7 @@
 import Component from "../ecs-core/Component";
 import ImageLoadRequest from "./ImageLoadRequest";
 
-export class ImageLoaded extends Component {
+export class ImagesLoaded extends Component {
     private _request: ImageLoadRequest;
 
     get request() {

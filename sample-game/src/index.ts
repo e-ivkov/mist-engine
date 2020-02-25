@@ -4,7 +4,7 @@ import CanvasComponent from "../../engine/canvas-renderer/CanvasComponent";
 import getRendererBundle from "../../engine/canvas-renderer/RendererBundle";
 import ImageLoadRequest from "../../engine/canvas-renderer/ImageLoadRequest";
 import ReactiveSystem from "../../engine/ecs-core/ReactiveSystem";
-import { ImageLoaded } from "../../engine/canvas-renderer/EventComponents";
+import { ImagesLoaded } from "../../engine/canvas-renderer/EventComponents";
 import ImageComponent from "../../engine/canvas-renderer/ImageComponent";
 import TransformComponent from "../../engine/positioning/PositionComponent";
 import { KeyDownEvent, MouseDownEvent } from "../../engine/input-management/EventComponents";
@@ -14,6 +14,7 @@ import getInputBundle from "../../engine/input-management/InputBundle";
 import { Vector2 } from "../../engine/CommonTypes";
 import getPhysicsBundle from "../../engine/physics/PhysicsBundle";
 import KinematicComponent from "../../engine/physics/KinematicComponent";
+import { addChild } from "../../engine/positioning/ParentChildRelation";
 
 
 let world = new World();
@@ -32,13 +33,16 @@ class PlayerComponent extends Component {
 
 world.addReactiveSystem(class extends ReactiveSystem {
     onComponentAdded() {
-        this.world.addEntity().addComponent(ImageComponent, "planeRed1.png")
+        const player = this.world.addEntity().addComponent(ImageComponent, "planeRed1.png")
             .addComponent(TransformComponent)
             .addComponent(PlayerComponent);
+        const star = this.world.addEntity().addComponent(ImageComponent, "starGold.png")
+            .addComponent(TransformComponent, 0, 50);
+        addChild(player, star);
     }
 
     getComponentsToReact() {
-        return [ImageLoaded];
+        return [ImagesLoaded];
     }
 });
 
@@ -68,7 +72,7 @@ world.addReactiveSystem(class extends ReactiveSystem {
     }
 });
 
-world.addEntity().addComponent(ImageLoadRequest, ["planeRed1.png"], "assets/");
+world.addEntity().addComponent(ImageLoadRequest, ["planeRed1.png", "starGold.png"], "assets/");
 
 
 

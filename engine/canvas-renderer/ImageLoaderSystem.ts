@@ -1,6 +1,6 @@
 import ReactiveSystem from "../ecs-core/ReactiveSystem";
 import ImageLoadRequest from "./ImageLoadRequest";
-import { ImageLoaded } from "./EventComponents";
+import { ImagesLoaded } from "./EventComponents";
 import LoadedImagesComponent from "./LoadedImagesComponent";
 
 export default class ImageLoaderSystem extends ReactiveSystem {
@@ -15,13 +15,15 @@ export default class ImageLoaderSystem extends ReactiveSystem {
                 loadedImages = entity.getComponent(LoadedImagesComponent) as LoadedImagesComponent;
             }
 
+            let numLoaded = 0;
+            
             request.fileNames.forEach(fileName => {
                 const image = new Image();
-                let numLoaded = 0;
+
                 image.onload = () => {
                     numLoaded++;
                     if (numLoaded >= request.fileNames.length) {
-                        this.world.addEntity().addComponent(ImageLoaded, request);
+                        this.world.addEntity().addComponent(ImagesLoaded, request);
                     }
                     loadedImages!.imagesByFilename.set(fileName, image);
                 };
