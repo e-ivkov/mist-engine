@@ -2,7 +2,7 @@ import ExecuteSystem from "../ecs-core/ExecuteSystem";
 import CanvasComponent from "./CanvasComponent";
 import World from "../ecs-core/World";
 import Group from "../ecs-core/Group";
-import TransformComponent from "../positioning/PositionComponent";
+import TransformComponent from "../positioning/TransformComponent";
 import ImageComponent from "./ImageComponent";
 import LoadedImagesComponent from "./LoadedImagesComponent";
 import { Vector2 } from "../CommonTypes";
@@ -46,22 +46,9 @@ export default class CanvasRendererSystem extends ExecuteSystem {
 
             if (htmlImg) {
 
-                let entity: Entity | undefined = e;
-                const transforms = new Array<TransformComponent>();
-                do {
-                    transforms.push(entity.getComponent(TransformComponent) as TransformComponent);
-                    entity = (entity.getComponent(ParentComponent) as (ParentComponent | undefined))?.parent;
-                } while (entity)
-
                 context?.save();
 
-                transforms.reverse().forEach(t => {
-                    //translate to pivot
-                    context?.translate(t.position.x,
-                        - t.position.y);
-                    context?.rotate(t.rotation * Math.PI / 180);
-                    context?.scale(t.scale.x, t.scale.y);
-                })
+                context?.setTransform(context.getTransform().multiply(this.getPivotGlobalTransform(e)));
 
                 const imgWidth = htmlImg.width;
                 const imgHeight = htmlImg.height;
@@ -82,6 +69,32 @@ export default class CanvasRendererSystem extends ExecuteSystem {
         });
 
         context.restore();
+    }
+
+    /**
+     * @param e entity for which we want to know global position of it's pivot point
+     * 
+     * @returns global transform matrix of the entities pivot relative to the sceen center
+     */
+    getPivotGlobalTransform(e: Entity) {
+        let entity: Entity | undefined = e;
+        const transforms = new Array<TransformComponent>();
+        do {
+            transforms.push(entity.getComponent(TransformComponent) as TransformComponent);
+            entity = (entity.getComponent(ParentComponent) as (ParentComponent | undefined))?.parent;
+        } while (entity)
+
+        let matrix = new DOMMatrix();
+
+        transforms.reverse().forEach(t => {
+            //translate to pivot
+            matrix.translateSelf(t.position.x,
+                - t.position.y);
+            matrix.rotateSelf(0, 0, t.rotation);
+            matrix.scaleSelf(t.scale.x, t.scale.y);
+        })
+
+        return matrix;
     }
 
     getAwakeCondition() {

@@ -6,7 +6,7 @@ import ImageLoadRequest from "../../engine/canvas-renderer/ImageLoadRequest";
 import ReactiveSystem from "../../engine/ecs-core/ReactiveSystem";
 import { ImagesLoaded } from "../../engine/canvas-renderer/EventComponents";
 import ImageComponent from "../../engine/canvas-renderer/ImageComponent";
-import TransformComponent from "../../engine/positioning/PositionComponent";
+import TransformComponent from "../../engine/positioning/TransformComponent";
 import { KeyDownEvent, MouseDownEvent } from "../../engine/input-management/EventComponents";
 import Component from "../../engine/ecs-core/Component";
 import Entity from "../../engine/ecs-core/Entity";
@@ -34,10 +34,10 @@ class PlayerComponent extends Component {
 world.addReactiveSystem(class extends ReactiveSystem {
     onComponentAdded() {
         const player = this.world.addEntity().addComponent(ImageComponent, "planeRed1.png")
-            .addComponent(TransformComponent)
+            .addComponent(TransformComponent, Vector2.zero, 45, new Vector2(2, 2))
             .addComponent(PlayerComponent);
         const star = this.world.addEntity().addComponent(ImageComponent, "starGold.png")
-            .addComponent(TransformComponent, 0, 50);
+            .addComponent(TransformComponent, Vector2.up.mul(70));
         addChild(player, star);
     }
 
