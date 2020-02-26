@@ -106,7 +106,7 @@ export class Matrix2D {
     }
 
     checkIndex(i: number) {
-        if (i >= 3) throw new MatrixInvalidIndexError("Index should be less than 3, got: " + i)
+        if (i >= 3 || i < 0) throw new MatrixInvalidIndexError("Index should be less than 3 and more or equal to 0, got: " + i)
     }
 
     getCell(i: number, j: number) {
