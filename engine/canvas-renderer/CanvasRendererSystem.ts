@@ -2,10 +2,11 @@ import ExecuteSystem from "../ecs-core/ExecuteSystem";
 import CanvasComponent from "./CanvasComponent";
 import World from "../ecs-core/World";
 import Group from "../ecs-core/Group";
-import TransformComponent from "./PositionComponent";
+import TransformComponent from "../positioning/TransformComponent";
 import ImageComponent from "./ImageComponent";
 import LoadedImagesComponent from "./LoadedImagesComponent";
 import { Vector2 } from "../CommonTypes";
+import { getGlobalTransform } from "../positioning/ParentChildRelation";
 
 /**
  * The 2D renderer that uses HTML5 Canvas component with its Canvas API.
@@ -34,20 +35,23 @@ export default class CanvasRendererSystem extends ExecuteSystem {
         let loadedImages = entities[0]
             .getComponent(LoadedImagesComponent) as LoadedImagesComponent;
 
+        context.save();
+        context.translate(canvasComponent.width / 2,
+            canvasComponent.height / 2);
+
         this.imageGroup.matchingEntities.forEach(e => {
             const image = e.getComponent(ImageComponent) as ImageComponent;
-            const transform = e.getComponent(TransformComponent) as TransformComponent;
             const htmlImg = loadedImages.imagesByFilename.get(image.fileName);
 
             if (htmlImg) {
-                const imgWidth = htmlImg.width * transform.scale.x;
-                const imgHeight = htmlImg.height * transform.scale.y;
 
                 context?.save();
-                //translate to pivot
-                context?.translate(canvasComponent.width / 2 + transform.position.x,
-                    canvasComponent.height / 2 - transform.position.y);
-                context?.rotate(transform.rotation * Math.PI / 180);
+
+                //we consider that by getting global transform we get image pivot position
+                context?.setTransform(context.getTransform().multiply(getGlobalTransform(e).toDOMMatrix()));
+
+                const imgWidth = htmlImg.width;
+                const imgHeight = htmlImg.height;
 
                 //get left top corner of image vector
                 const pivotScaled = new Vector2(image.pivot.x * imgWidth, -image.pivot.y * imgHeight);
@@ -62,7 +66,9 @@ export default class CanvasRendererSystem extends ExecuteSystem {
 
                 context?.restore();
             }
-        })
+        });
+
+        context.restore();
     }
 
     getAwakeCondition() {

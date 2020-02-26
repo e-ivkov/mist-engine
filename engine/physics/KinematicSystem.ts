@@ -1,7 +1,7 @@
 import ExecuteSystem from "../ecs-core/ExecuteSystem";
 import KinematicComponent from "./KinematicComponent";
 import Entity from "../ecs-core/Entity";
-import TransformComponent from "../canvas-renderer/PositionComponent";
+import TransformComponent from "../positioning/TransformComponent";
 
 export default class KinematicSystem extends ExecuteSystem {
     update(deltaTime: number, entities: ReadonlyArray<Entity>) {
