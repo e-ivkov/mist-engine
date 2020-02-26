@@ -78,7 +78,11 @@ export class Vector2 {
 export class MatrixCreationError extends Error { }
 export class MatrixInvalidIndexError extends Error { }
 
-
+/**
+ * Custom Matrix2D class used mainly to not depend on DOM in test and unrelated to rendering systems. Also DOMMatrix is unstable.
+ * Represents a 3x3 matrix for 2d transformations, uses @class Vector2
+ * Indexes are the following: i - row, j - column, starting from 0 to 2 inclusive.
+ */
 export class Matrix2D {
 
     private cells: Float64Array;
@@ -180,6 +184,13 @@ export class Matrix2D {
         return new Vector2(transformed.getCell(0, 0), transformed.getCell(1, 0));
     }
 
+
+    /**
+     * @returns 2d DOMMatrix (which is unstable) in the form of
+     *  a, c, e,
+     *  b, d, f,
+     *  0, 0, 1,
+     */
     toDOMMatrix() {
         let matrix = new DOMMatrix();
 
