@@ -2,6 +2,7 @@ import Component from "../ecs-core/Component";
 import Entity from "../ecs-core/Entity";
 import World from "../ecs-core/World";
 import TransformComponent from "./TransformComponent";
+import { Matrix2D } from "../CommonTypes";
 
 export class ParentComponent extends Component {
     readonly parent: Entity;
@@ -74,15 +75,15 @@ export function getGlobalTransform(e: Entity) {
         entity = (entity.getComponent(ParentComponent) as (ParentComponent | undefined))?.parent;
     } while (entity)
 
-    let matrix = new DOMMatrix();
+    let matrix = new Matrix2D();
 
     transforms.reverse().forEach(t => {
         //translate to pivot
-        matrix.translateSelf(t.position.x,
+        matrix = matrix.translate(t.position.x,
             - t.position.y);
-        matrix.rotateSelf(0, 0, t.rotation);
-        matrix.scaleSelf(t.scale.x, t.scale.y);
-    })
+        matrix = matrix.rotate(t.rotation * Math.PI / 180);
+        matrix = matrix.scale(t.scale.x, t.scale.y);
+    });
 
     return matrix;
 }

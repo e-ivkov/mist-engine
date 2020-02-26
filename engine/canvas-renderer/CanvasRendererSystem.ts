@@ -6,7 +6,7 @@ import TransformComponent from "../positioning/TransformComponent";
 import ImageComponent from "./ImageComponent";
 import LoadedImagesComponent from "./LoadedImagesComponent";
 import { Vector2 } from "../CommonTypes";
-import {getGlobalTransform } from "../positioning/ParentChildRelation";
+import { getGlobalTransform } from "../positioning/ParentChildRelation";
 
 /**
  * The 2D renderer that uses HTML5 Canvas component with its Canvas API.
@@ -46,9 +46,9 @@ export default class CanvasRendererSystem extends ExecuteSystem {
             if (htmlImg) {
 
                 context?.save();
-                
+
                 //we consider that by getting global transform we get image pivot position
-                context?.setTransform(context.getTransform().multiply(getGlobalTransform(e)));
+                context?.setTransform(context.getTransform().multiply(getGlobalTransform(e).toDOMMatrix()));
 
                 const imgWidth = htmlImg.width;
                 const imgHeight = htmlImg.height;
