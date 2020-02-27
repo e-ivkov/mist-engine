@@ -7,6 +7,11 @@ import Component from "./Component";
 
 export default abstract class ExecuteSystem extends System {
 
+    /**
+     * 
+     * @param deltaTime time between previous and current frames in milliseconds
+     * @param etities Entities that match awake condition, e.g. have all the components listed there on them. Or undefined if awake condition is always.
+     */
     abstract update(deltaTime: number, etities?: ReadonlyArray<Entity>): void;
 
     /**
