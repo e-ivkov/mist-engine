@@ -43,6 +43,7 @@ export default class World {
         return this._singletonComponents.get(componentCons);
     }
 
+    //TODO: revise if here should be a component constructor, not component itself
     tryAddSingletonComponent(component: Component): boolean {
         if (this._singletonComponents.has(component.constructor as IComponentConstructor)) {
             return false;

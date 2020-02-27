@@ -35,3 +35,16 @@ test("get global transform", () => {
     expect(deltaEqual(pos.y, -96.16652224137047, delta)).toBeTruthy();
 
 });
+
+test("transform from origin point is the same as global coordinate", () => {
+
+    const entity = new Entity(empty, empty, empty).addComponent(TransformComponent, new Vector2(1, 2));
+
+    let matrix = getGlobalTransform(entity);
+    let point = Vector2.zero;
+    let pos = matrix.transformPoint(point);
+    let delta = Math.pow(10, -13);
+    expect(deltaEqual(pos.x, 1, delta)).toBeTruthy();
+    expect(deltaEqual(pos.y, -2, delta)).toBeTruthy();
+
+});
