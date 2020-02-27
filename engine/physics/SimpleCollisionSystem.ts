@@ -24,10 +24,9 @@ export default class SimpleCollisionSystem extends ExecuteSystem {
      * @returns true if there is a collision, false otherwise
      */
     static checkCollision(entity1: Entity, entity2: Entity) {
-        const idVector = new Vector2(1, 1);
 
-        const pos1 = getGlobalTransform(entity1).transformPoint(idVector);
-        const pos2 = getGlobalTransform(entity2).transformPoint(idVector);
+        const pos1 = getGlobalTransform(entity1).transformPoint(Vector2.zero);
+        const pos2 = getGlobalTransform(entity2).transformPoint(Vector2.zero);
 
         const collider1 = entity1.getComponent(RectangleCollider) as RectangleCollider;
         const collider2 = entity2.getComponent(RectangleCollider) as RectangleCollider;
@@ -35,9 +34,9 @@ export default class SimpleCollisionSystem extends ExecuteSystem {
         const yDist = Math.abs(pos1.y - pos2.y);
         const xDist = Math.abs(pos1.x - pos2.x);
 
-        const yIntersect = yDist < (collider1.height / 2 + collider2.height / 2);
-        const xIntersect = xDist < (collider1.width / 2 + collider2.width / 2);
+        const yIntersect = yDist <= (collider1.height / 2 + collider2.height / 2);
+        const xIntersect = xDist <= (collider1.width / 2 + collider2.width / 2);
 
-        return yIntersect || xIntersect;
+        return yIntersect && xIntersect;
     }
 }
