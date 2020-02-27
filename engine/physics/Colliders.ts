@@ -7,10 +7,12 @@ import Component from "../ecs-core/Component";
 export class RectangleCollider extends Component {
     width: number;
     height: number;
+    collisionLayer: number;
 
-    constructor(width = 0, height = 0) {
+    constructor(width = 0, height = 0, collisionLayer = 0) {
         super();
         this.width = width;
         this.height = height;
+        this.collisionLayer = collisionLayer;
     }
 }

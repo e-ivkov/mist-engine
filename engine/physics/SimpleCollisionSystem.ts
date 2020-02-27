@@ -4,15 +4,41 @@ import { RectangleCollider } from "./Colliders";
 import TransformComponent from "../positioning/TransformComponent";
 import { getGlobalTransform } from "../positioning/ParentChildRelation";
 import { Vector2 } from "../CommonTypes";
+import CollisionMatrix from "./CollisionMatrix";
+import { CollisionEvent } from "./Events";
 
 export default class SimpleCollisionSystem extends ExecuteSystem {
 
-    update(deltaTime: number, entities?: Entity[] | undefined): void {
-        throw new Error("Method not implemented.");
+    update(deltaTime: number, entities?: ReadonlyArray<Entity>) {
+        let collisionMatrix = this.world.getSingletonComponent(CollisionMatrix) as (CollisionMatrix | undefined);
+        if (!collisionMatrix) return;
+
+        this.permutations(entities!.map(e => e.getComponent(RectangleCollider) as RectangleCollider))
+            .forEach(pair => {
+                const canCollide = collisionMatrix?.canCollide(pair[0].collisionLayer, pair[1].collisionLayer);
+                const check = SimpleCollisionSystem.checkCollision(pair[0].entity!, pair[1].entity!);
+                const doCollide = canCollide && check;
+
+                if (doCollide) {
+                    pair[1].entity?.addComponent(CollisionEvent, pair[0].entity);
+                    pair[0].entity?.addComponent(CollisionEvent, pair[1].entity);
+
+                    this.world.cleanUpComponentStack.push([pair[0].entity!, CollisionEvent]);
+                    this.world.cleanUpComponentStack.push([pair[1].entity!, CollisionEvent]);
+                }
+            });
     }
 
     getAwakeCondition() {
         return [RectangleCollider, TransformComponent];
+    }
+
+    private permutations<T>(list: T[]): Array<[T, T]> {
+        if (list.length < 2) { return []; }
+        const first = list[0];
+        const rest = list.slice(1);
+        const pairs: Array<[T, T]> = rest.map(x => [first, x]);
+        return pairs.concat(this.permutations(rest));
     }
 
     /**
