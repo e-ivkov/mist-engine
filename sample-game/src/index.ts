@@ -15,6 +15,7 @@ import { Vector2 } from "../../engine/CommonTypes";
 import getPhysicsBundle from "../../engine/physics/PhysicsBundle";
 import KinematicComponent from "../../engine/physics/KinematicComponent";
 import { addChild } from "../../engine/positioning/ParentChildRelation";
+import CanvasText from "../../engine/canvas-renderer/CanvasText";
 
 
 let world = new World();
@@ -37,7 +38,8 @@ world.addReactiveSystem(class extends ReactiveSystem {
             .addComponent(TransformComponent, Vector2.zero, 45, new Vector2(2, 2))
             .addComponent(PlayerComponent);
         const star = this.world.addEntity().addComponent(ImageComponent, "starGold.png")
-            .addComponent(TransformComponent, Vector2.up.mul(70));
+            .addComponent(TransformComponent, Vector2.up.mul(70))
+            .addComponent(CanvasText, "Hello Stars!");
         addChild(player, star);
     }
 
