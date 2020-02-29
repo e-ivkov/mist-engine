@@ -87,7 +87,7 @@ export default class World {
     }
 
     addSystemBundle(bundle: SystemBundle, systemArgs?: SystemArgs) {
-        const [reactSystems, executeSystems] = bundle();
+        const [reactSystems, executeSystems] = bundle.get();
         reactSystems.forEach(s => {
             const args = systemArgs?.get(s);
             if (args) {
@@ -222,8 +222,14 @@ export default class World {
     }
 
     update(deltaTime: number) {
-        this.awakeSystems.forEach((system) => system.update(deltaTime,
-            this.systems.get(system.constructor as IExecuteSystemConstructor)?.[1].matchingEntities));
+
+        const awakeSystems = Array.from(this.awakeSystems.values());
+
+        for (let i = 0; i < awakeSystems.length; i++) {
+            const [system, group]: [ExecuteSystem, Group] = this.systems.get(awakeSystems[i].constructor as IExecuteSystemConstructor)!
+            system.update(deltaTime, group.matchingEntities);
+        }
+
         this.alwaysAwakeSystems.forEach((system) => system.update(deltaTime));
 
         if (this.cleanUpComponentStack.length > 0 || this.cleanUpEntityStack.length > 0) {

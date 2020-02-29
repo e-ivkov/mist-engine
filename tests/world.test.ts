@@ -5,6 +5,8 @@ import ReactiveSystem from "../engine/ecs-core/ReactiveSystem";
 import { detectComponentChanges } from "../engine/ecs-core/DetectComponentChanges";
 import { SystemBundle } from "../engine/ecs-core/SystemBundle";
 import Entity from "../engine/ecs-core/Entity";
+import IReactiveSystemConstructor from "../engine/ecs-core/IReactiveSystemConstructor";
+import IExecuteSystemConstructor from "../engine/ecs-core/IExecuteSystemConstructor";
 
 let world: World;
 
@@ -181,11 +183,15 @@ test("system bundle", () => {
     class BundleSystem1 extends ExecuteSystem {
         update() { }
     };
-    const bundle: SystemBundle = () => {
-        return [[TrackTestSystem], [BundleSystem, BundleSystem1]];
-    };
 
-    world.addSystemBundle(bundle);
+    class Bundle implements SystemBundle {
+        get(): [IReactiveSystemConstructor[], IExecuteSystemConstructor[]] {
+            return [[TrackTestSystem], [BundleSystem, BundleSystem1]];
+        }
+
+    }
+
+    world.addSystemBundle(new Bundle());
 
     expect(world["alwaysAwakeSystems"].keys()).toContain(BundleSystem);
     expect(world["alwaysAwakeSystems"].keys()).toContain(BundleSystem1);
