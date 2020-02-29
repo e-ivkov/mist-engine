@@ -87,7 +87,7 @@ export default class World {
     }
 
     addSystemBundle(bundle: SystemBundle, systemArgs?: SystemArgs) {
-        const [reactSystems, executeSystems] = bundle();
+        const [reactSystems, executeSystems] = bundle.get();
         reactSystems.forEach(s => {
             const args = systemArgs?.get(s);
             if (args) {

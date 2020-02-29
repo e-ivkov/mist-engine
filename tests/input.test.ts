@@ -2,12 +2,13 @@ import World from "../engine/ecs-core/World";
 import getInputBundle from "../engine/input-management/InputBundle";
 import Game from "../engine/Game";
 import { ClickEvent, KeyDownEvent } from "../engine/input-management/EventComponents";
+import InputBundle from "../engine/input-management/InputBundle";
 
 let world: World;
 
 beforeEach(() => {
     world = new World();
-    world.addSystemBundle(getInputBundle());
+    world.addSystemBundle(new InputBundle());
     const game = new Game([world]);
     game.start();
 });

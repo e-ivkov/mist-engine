@@ -1,7 +1,6 @@
 import Game from "../../engine/Game";
 import World from "../../engine/ecs-core/World";
 import CanvasComponent from "../../engine/canvas-renderer/CanvasComponent";
-import getRendererBundle from "../../engine/canvas-renderer/RendererBundle";
 import ImageLoadRequest from "../../engine/canvas-renderer/ImageLoadRequest";
 import ReactiveSystem from "../../engine/ecs-core/ReactiveSystem";
 import { ImagesLoaded } from "../../engine/canvas-renderer/EventComponents";
@@ -10,18 +9,19 @@ import TransformComponent from "../../engine/positioning/TransformComponent";
 import { KeyDownEvent, MouseDownEvent } from "../../engine/input-management/EventComponents";
 import Component from "../../engine/ecs-core/Component";
 import Entity from "../../engine/ecs-core/Entity";
-import getInputBundle from "../../engine/input-management/InputBundle";
 import { Vector2 } from "../../engine/CommonTypes";
-import getPhysicsBundle from "../../engine/physics/PhysicsBundle";
+import PhysicsBundle from "../../engine/physics/PhysicsBundle";
 import KinematicComponent from "../../engine/physics/KinematicComponent";
 import { addChild } from "../../engine/positioning/ParentChildRelation";
 import CanvasText from "../../engine/canvas-renderer/CanvasText";
+import InputBundle from "../../engine/input-management/InputBundle";
+import RendererBundle from "../../engine/canvas-renderer/RendererBundle";
 
 
 let world = new World();
-world.addSystemBundle(getRendererBundle());
-world.addSystemBundle(getInputBundle());
-world.addSystemBundle(getPhysicsBundle());
+world.addSystemBundle(new RendererBundle());
+world.addSystemBundle(new InputBundle());
+world.addSystemBundle(new PhysicsBundle());
 
 let game = new Game([world]);
 game.start();
