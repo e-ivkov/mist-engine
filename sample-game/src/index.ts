@@ -17,6 +17,8 @@ import InputBundle from "../../engine/input-management/InputBundle";
 import RendererBundle from "../../engine/canvas-renderer/RendererBundle";
 import AnimationComponent from "../../engine/animation/AnimationComponent";
 import AnimationBundle from "../../engine/animation/AnimationBundle";
+import { PlayerComponent, TitleText, FlyingStarted } from "./Components";
+import GroundSpawnerSystem from "./GroundSpawnerSystem";
 
 const planeImages = ["planeRed1.png", "planeRed2.png", "planeRed3.png"];
 
@@ -31,18 +33,6 @@ game.start();
 
 world.addEntity().addComponent(CanvasComponent, 800, 480);
 
-class PlayerComponent extends Component {
-    isSingleton() { return true; }
-}
-
-class FlyingStarted extends Component {
-    isSingleton() { return true; }
-}
-
-class TitleText extends Component {
-    isSingleton() { return true; }
-}
-
 world.addReactiveSystem(class extends ReactiveSystem {
     onComponentAdded() {
         const player = this.world.addEntity().addComponent(AnimationComponent, planeImages, 10, false)
@@ -55,7 +45,7 @@ world.addReactiveSystem(class extends ReactiveSystem {
             .addComponent(CanvasText, "TAPPY PLANE", "42px arial", "center", "#529EDE");
         const background = this.world.addEntity()
             .addComponent(TransformComponent)
-            .addComponent(ImageComponent, "background.png")
+            .addComponent(ImageComponent, "background.png", Vector2.zero, -1)
     }
 
     getComponentsToReact() {
@@ -77,7 +67,7 @@ world.addReactiveSystem(class extends ReactiveSystem {
 
         world.getSingletonComponent(TitleText)?.entity?.removeComponent(CanvasText);
 
-        world.tryAddSingletonComponent(new FlyingStarted());
+        world.addSingletonComponent(FlyingStarted);
     }
 
     onComponentAdded(e: Entity, c: Component) {
@@ -99,7 +89,9 @@ world.addReactiveSystem(class extends ReactiveSystem {
     }
 });
 
-world.addEntity().addComponent(ImageLoadRequest, ["starGold.png", "background.png"].concat(planeImages), "assets/");
+world.addExecuteSystem(GroundSpawnerSystem);
+
+world.addEntity().addComponent(ImageLoadRequest, ["starGold.png", "background.png", "groundGrass.png"].concat(planeImages), "assets/");
 
 
 

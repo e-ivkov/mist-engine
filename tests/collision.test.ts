@@ -70,7 +70,7 @@ test("collision event fired correctly", () => {
     const e2 = world.addEntity().addComponent(TransformComponent, new Vector2(2, 0))
         .addComponent(RectangleCollider, 4, 3);
 
-    world.tryAddSingletonComponent(new CollisionMatrix());
+    world.addSingletonComponent(CollisionMatrix);
     const matrix = world.getSingletonComponent(CollisionMatrix) as CollisionMatrix;
     matrix.setCollision(0, 0, true);
 
