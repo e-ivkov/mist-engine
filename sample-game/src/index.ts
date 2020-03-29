@@ -12,35 +12,50 @@ import Entity from "../../engine/ecs-core/Entity";
 import { Vector2 } from "../../engine/CommonTypes";
 import PhysicsBundle from "../../engine/physics/PhysicsBundle";
 import KinematicComponent from "../../engine/physics/KinematicComponent";
-import { addChild } from "../../engine/positioning/ParentChildRelation";
 import CanvasText from "../../engine/canvas-renderer/CanvasText";
 import InputBundle from "../../engine/input-management/InputBundle";
 import RendererBundle from "../../engine/canvas-renderer/RendererBundle";
+import AnimationComponent from "../../engine/animation/AnimationComponent";
+import AnimationBundle from "../../engine/animation/AnimationBundle";
 
+const planeImages = ["planeRed1.png", "planeRed2.png", "planeRed3.png"];
 
 let world = new World();
 world.addSystemBundle(new RendererBundle());
 world.addSystemBundle(new InputBundle());
 world.addSystemBundle(new PhysicsBundle());
+world.addSystemBundle(new AnimationBundle());
 
 let game = new Game([world]);
 game.start();
 
-world.addEntity().addComponent(CanvasComponent, 500, 500);
+world.addEntity().addComponent(CanvasComponent, 800, 480);
 
 class PlayerComponent extends Component {
     isSingleton() { return true; }
 }
 
+class FlyingStarted extends Component {
+    isSingleton() { return true; }
+}
+
+class TitleText extends Component {
+    isSingleton() { return true; }
+}
+
 world.addReactiveSystem(class extends ReactiveSystem {
     onComponentAdded() {
-        const player = this.world.addEntity().addComponent(ImageComponent, "planeRed1.png")
-            .addComponent(TransformComponent, Vector2.zero, 45, new Vector2(2, 2))
+        const player = this.world.addEntity().addComponent(AnimationComponent, planeImages, 10, false)
+            .addComponent(TransformComponent, Vector2.left.mul(250))
+            .addComponent(KinematicComponent)
             .addComponent(PlayerComponent);
-        const star = this.world.addEntity().addComponent(ImageComponent, "starGold.png")
-            .addComponent(TransformComponent, Vector2.up.mul(70))
-            .addComponent(CanvasText, "Hello Stars!");
-        addChild(player, star);
+        const titleText = this.world.addEntity()
+            .addComponent(TransformComponent)
+            .addComponent(TitleText)
+            .addComponent(CanvasText, "TAPPY PLANE", "42px arial", "center", "#529EDE");
+        const background = this.world.addEntity()
+            .addComponent(TransformComponent)
+            .addComponent(ImageComponent, "background.png")
     }
 
     getComponentsToReact() {
@@ -53,19 +68,29 @@ world.addReactiveSystem(class extends ReactiveSystem {
     readonly upVel = Vector2.up.mul(0.8);
     readonly gravity = Vector2.down.mul(0.002);
 
+    private startFlying(player: Entity, world: World) {
+        const kinem = player.getComponent(KinematicComponent) as KinematicComponent;
+        kinem.acceleration = this.gravity.clone();
+
+        const anim = player.getComponent(AnimationComponent) as AnimationComponent;
+        anim.running = true;
+
+        world.getSingletonComponent(TitleText)?.entity?.removeComponent(CanvasText);
+
+        world.tryAddSingletonComponent(new FlyingStarted());
+    }
+
     onComponentAdded(e: Entity, c: Component) {
         const player = world.getSingletonComponent(PlayerComponent)?.entity;
         if (c instanceof KeyDownEvent) {
             if (c.event.key !== " ") return;
         }
         if (player) {
-            const kinem = player.getComponent(KinematicComponent);
-            if (!(kinem instanceof KinematicComponent)) {
-                player.addComponent(KinematicComponent, this.upVel.clone(), this.gravity.clone());
-            }
-            else {
-                kinem.velocity = this.upVel.clone();
-            }
+            const kinem = player.getComponent(KinematicComponent) as KinematicComponent;
+
+            if (!world.getSingletonComponent(FlyingStarted)) this.startFlying(player, world);
+
+            kinem.velocity = this.upVel.clone();
         }
     }
 
@@ -74,7 +99,7 @@ world.addReactiveSystem(class extends ReactiveSystem {
     }
 });
 
-world.addEntity().addComponent(ImageLoadRequest, ["planeRed1.png", "starGold.png"], "assets/");
+world.addEntity().addComponent(ImageLoadRequest, ["starGold.png", "background.png"].concat(planeImages), "assets/");
 
 
 
