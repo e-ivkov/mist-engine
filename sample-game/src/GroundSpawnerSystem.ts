@@ -10,11 +10,11 @@ import { Vector2 } from "../../engine/CommonTypes";
 import KinematicComponent from "../../engine/physics/KinematicComponent";
 import Entity from "../../engine/ecs-core/Entity";
 import { RectangleCollider } from "../../engine/physics/Colliders";
+import { groundVelocity } from "./Constants";
 
 export default class GroundSpawnerSystem extends ExecuteSystem {
 
     private groundGroup: Group;
-    readonly groundVelocity = Vector2.left.mul(0.3);
 
     constructor(world: World) {
         super(world);
@@ -51,7 +51,7 @@ export default class GroundSpawnerSystem extends ExecuteSystem {
 
         this.groundGroup.matchingEntities.forEach(e => {
             const kinem = e.getComponent(KinematicComponent) as KinematicComponent;
-            kinem.velocity = this.groundVelocity;
+            kinem.velocity = groundVelocity;
 
             const ground = e.getComponent(GroundComponent) as GroundComponent;
             const tranform = e.getComponent(TransformComponent) as TransformComponent;

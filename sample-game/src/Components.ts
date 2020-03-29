@@ -11,6 +11,8 @@ export class GroundComponent extends Component {
     }
 }
 
+export class RockComponent extends Component { }
+
 export class PlayerComponent extends Component {
     isSingleton() { return true; }
 }
