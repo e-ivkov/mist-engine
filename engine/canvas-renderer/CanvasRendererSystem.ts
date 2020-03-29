@@ -43,7 +43,12 @@ export default class CanvasRendererSystem extends ExecuteSystem {
         context.translate(canvasComponent.width / 2,
             canvasComponent.height / 2);
 
-        this.imageGroup.matchingEntities.forEach(e => this.drawImage(e, loadedImages, context!));
+        const imagesSorted: Entity[] = Array.from(this.imageGroup.matchingEntities);
+        imagesSorted.sort((first, second) =>
+            (first.getComponent(ImageComponent) as ImageComponent).layer - (second.getComponent(ImageComponent) as ImageComponent).layer
+        )
+
+        imagesSorted.forEach(e => this.drawImage(e, loadedImages, context!));
 
         //text is drawn on top of images
         this.textGroup.matchingEntities.forEach(e => this.drawText(e, context!));
