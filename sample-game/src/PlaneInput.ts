@@ -21,7 +21,7 @@ export default class PlaneInput extends ReactiveSystem {
         const anim = player.getComponent(AnimationComponent) as AnimationComponent;
         anim.running = true;
 
-        world.getSingletonComponent(TitleText)?.entity?.removeComponent(CanvasText);
+        (world.getSingletonComponent(TitleText)?.entity?.getComponent(CanvasText) as CanvasText).text = "0";
 
         world.addSingletonComponent(FlyingStarted);
     }
