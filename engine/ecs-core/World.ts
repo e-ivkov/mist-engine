@@ -43,8 +43,14 @@ export default class World {
         return this._singletonComponents.get(componentCons);
     }
 
-    //TODO: revise if here should be a component constructor, not component itself
-    tryAddSingletonComponent(component: Component): boolean {
+    addSingletonComponent(componentCons: IComponentConstructor, ...args: any) {
+        const entity = this.addEntity().addComponent(componentCons, ...args);
+    }
+
+    /** 
+     * For internal use only
+    */
+    tryEnlistSingletonComponent(component: Component): boolean {
         if (this._singletonComponents.has(component.constructor as IComponentConstructor)) {
             return false;
         }
