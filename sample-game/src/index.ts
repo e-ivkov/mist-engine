@@ -19,81 +19,111 @@ import AnimationComponent from "../../engine/animation/AnimationComponent";
 import AnimationBundle from "../../engine/animation/AnimationBundle";
 import { PlayerComponent, TitleText, FlyingStarted } from "./Components";
 import GroundSpawnerSystem from "./GroundSpawnerSystem";
+import { RectangleCollider } from "../../engine/physics/Colliders";
+import CollisionMatrix from "../../engine/physics/CollisionMatrix";
+import { CollisionEvent } from "../../engine/physics/Events";
 
 const planeImages = ["planeRed1.png", "planeRed2.png", "planeRed3.png"];
 
-let world = new World();
-world.addSystemBundle(new RendererBundle());
-world.addSystemBundle(new InputBundle());
-world.addSystemBundle(new PhysicsBundle());
-world.addSystemBundle(new AnimationBundle());
+let game = new Game([]);
 
-let game = new Game([world]);
-game.start();
+function gameInit() {
 
-world.addEntity().addComponent(CanvasComponent, 800, 480);
+    let world = new World();
+    game.addWorld(world);
 
-world.addReactiveSystem(class extends ReactiveSystem {
-    onComponentAdded() {
-        const player = this.world.addEntity().addComponent(AnimationComponent, planeImages, 10, false)
-            .addComponent(TransformComponent, Vector2.left.mul(250))
-            .addComponent(KinematicComponent)
-            .addComponent(PlayerComponent);
-        const titleText = this.world.addEntity()
-            .addComponent(TransformComponent)
-            .addComponent(TitleText)
-            .addComponent(CanvasText, "TAPPY PLANE", "42px arial", "center", "#529EDE");
-        const background = this.world.addEntity()
-            .addComponent(TransformComponent)
-            .addComponent(ImageComponent, "background.png", Vector2.zero, -1)
-    }
+    world.addSystemBundle(new RendererBundle());
+    world.addSystemBundle(new InputBundle());
+    world.addSystemBundle(new PhysicsBundle());
+    world.addSystemBundle(new AnimationBundle());
 
-    getComponentsToReact() {
-        return [ImagesLoaded];
-    }
-});
+    world.addEntity().addComponent(CanvasComponent, 800, 480);
 
-world.addReactiveSystem(class extends ReactiveSystem {
+    world.addSingletonComponent(CollisionMatrix);
+    const matrix = world.getSingletonComponent(CollisionMatrix) as CollisionMatrix;
+    matrix.setCollision(0, 1, true);
 
-    readonly upVel = Vector2.up.mul(0.8);
-    readonly gravity = Vector2.down.mul(0.002);
-
-    private startFlying(player: Entity, world: World) {
-        const kinem = player.getComponent(KinematicComponent) as KinematicComponent;
-        kinem.acceleration = this.gravity.clone();
-
-        const anim = player.getComponent(AnimationComponent) as AnimationComponent;
-        anim.running = true;
-
-        world.getSingletonComponent(TitleText)?.entity?.removeComponent(CanvasText);
-
-        world.addSingletonComponent(FlyingStarted);
-    }
-
-    onComponentAdded(e: Entity, c: Component) {
-        const player = world.getSingletonComponent(PlayerComponent)?.entity;
-        if (c instanceof KeyDownEvent) {
-            if (c.event.key !== " ") return;
+    world.addReactiveSystem(class extends ReactiveSystem {
+        onComponentAdded() {
+            const player = this.world.addEntity().addComponent(AnimationComponent, planeImages, 10, false)
+                .addComponent(TransformComponent, Vector2.left.mul(250))
+                .addComponent(KinematicComponent)
+                .addComponent(PlayerComponent)
+                .addComponent(RectangleCollider, 50, 40);
+            const titleText = this.world.addEntity()
+                .addComponent(TransformComponent)
+                .addComponent(TitleText)
+                .addComponent(CanvasText, "TAPPY PLANE", "42px arial", "center", "#529EDE");
+            const background = this.world.addEntity()
+                .addComponent(TransformComponent)
+                .addComponent(ImageComponent, "background.png", Vector2.zero, -1)
         }
-        if (player) {
+
+        getComponentsToReact() {
+            return [ImagesLoaded];
+        }
+    });
+
+    world.addReactiveSystem(class extends ReactiveSystem {
+
+        readonly upVel = Vector2.up.mul(0.8);
+        readonly gravity = Vector2.down.mul(0.002);
+
+        private startFlying(player: Entity, world: World) {
             const kinem = player.getComponent(KinematicComponent) as KinematicComponent;
+            kinem.acceleration = this.gravity.clone();
 
-            if (!world.getSingletonComponent(FlyingStarted)) this.startFlying(player, world);
+            const anim = player.getComponent(AnimationComponent) as AnimationComponent;
+            anim.running = true;
 
-            kinem.velocity = this.upVel.clone();
+            world.getSingletonComponent(TitleText)?.entity?.removeComponent(CanvasText);
+
+            world.addSingletonComponent(FlyingStarted);
         }
-    }
 
-    getComponentsToReact() {
-        return [KeyDownEvent, MouseDownEvent];
-    }
-});
+        onComponentAdded(e: Entity, c: Component) {
+            const player = world.getSingletonComponent(PlayerComponent)?.entity;
+            if (c instanceof KeyDownEvent) {
+                if (c.event.key !== " ") return;
+            }
+            if (player) {
+                const kinem = player.getComponent(KinematicComponent) as KinematicComponent;
 
-world.addExecuteSystem(GroundSpawnerSystem);
+                if (!world.getSingletonComponent(FlyingStarted)) this.startFlying(player, world);
 
-world.addEntity().addComponent(ImageLoadRequest, ["starGold.png", "background.png", "groundGrass.png"].concat(planeImages), "assets/");
+                kinem.velocity = this.upVel.clone();
+            }
+        }
 
+        getComponentsToReact() {
+            return [KeyDownEvent, MouseDownEvent];
+        }
+    });
 
+    world.addReactiveSystem(class extends ReactiveSystem {
+        private fired = false;
 
+        onComponentAdded(e: Entity, c: Component) {
+            if (!this.fired) {
+                this.fired = true;
+                game.stop();
+                game.removeWorld(world);
+                console.log("restart");
+                gameInit();
+            }
+        }
 
+        getComponentsToReact() {
+            return [CollisionEvent]
+        }
 
+    })
+
+    world.addExecuteSystem(GroundSpawnerSystem);
+
+    world.addEntity().addComponent(ImageLoadRequest, ["starGold.png", "background.png", "groundGrass.png"].concat(planeImages), "assets/");
+
+    game.start();
+}
+
+gameInit();

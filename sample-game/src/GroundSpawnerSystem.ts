@@ -9,6 +9,7 @@ import TransformComponent from "../../engine/positioning/TransformComponent";
 import { Vector2 } from "../../engine/CommonTypes";
 import KinematicComponent from "../../engine/physics/KinematicComponent";
 import Entity from "../../engine/ecs-core/Entity";
+import { RectangleCollider } from "../../engine/physics/Colliders";
 
 export default class GroundSpawnerSystem extends ExecuteSystem {
 
@@ -38,6 +39,7 @@ export default class GroundSpawnerSystem extends ExecuteSystem {
             .addComponent(TransformComponent, new Vector2(x, y), 0, new Vector2(1, upper ? -1 : 1))
             .addComponent(ImageComponent, "groundGrass.png")
             .addComponent(KinematicComponent)
+            .addComponent(RectangleCollider, canvas.width, groundImgHeight / 2, 1)
             .addComponent(GroundComponent, upper, prevGround);
 
         return e.getComponent(GroundComponent) as GroundComponent
@@ -50,7 +52,6 @@ export default class GroundSpawnerSystem extends ExecuteSystem {
         this.groundGroup.matchingEntities.forEach(e => {
             const kinem = e.getComponent(KinematicComponent) as KinematicComponent;
             kinem.velocity = this.groundVelocity;
-            console.log(kinem.velocity);
 
             const ground = e.getComponent(GroundComponent) as GroundComponent;
             const tranform = e.getComponent(TransformComponent) as TransformComponent;

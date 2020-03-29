@@ -1,9 +1,11 @@
 import World from "./ecs-core/World";
-import { WorldStarted, GameStarted, WorldStopping } from "./EventComponents";
+import { WorldStarted, GameStarted, WorldRemoved } from "./EventComponents";
 
 export default class Game {
 
     private previousTime = 0;
+
+    private active = false;
 
     private _worlds: Set<World>;
 
@@ -19,7 +21,7 @@ export default class Game {
 
     removeWorld(world: World) {
         this._worlds.delete(world);
-        world.addEntity().addComponent(WorldStopping);
+        world.addEntity().addComponent(WorldRemoved);
         world.active = false;
     }
 
@@ -34,13 +36,18 @@ export default class Game {
                 .addComponent(WorldStarted);
         })
         this.previousTime = window.performance.now();
+        this.active = true;
         this.update();
+    }
+
+    stop() {
+        this.active = false;
     }
 
     private update() {
         const currentTime = window.performance.now();
         this._worlds.forEach(world => world.update(currentTime - this.previousTime));
         this.previousTime = currentTime;
-        window.requestAnimationFrame(this.update.bind(this));
+        if (this.active) window.requestAnimationFrame(this.update.bind(this));
     }
 }
